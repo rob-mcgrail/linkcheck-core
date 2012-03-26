@@ -1,3 +1,3 @@
-R = Redis.new
+$redis = Redis.new
 
-R.select 1
+$redis.select 1

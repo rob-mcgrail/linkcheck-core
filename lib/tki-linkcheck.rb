@@ -13,6 +13,6 @@ require './lib/tki-linkcheck/crawler'
 
 
 
-site = Site.new('http://scienceonline.tki.org.nz/')
+#site = Site.new('http://scienceonline.tki.org.nz/')
 
-Crawler.new(site).crawl
+#Crawler.new(site).crawl
