@@ -6,10 +6,14 @@ class Check
     if link =~ /^#{Regexp.escape(page.url.to_s)}#[^!]/
       validate_relative_anchor(page, link)
     else
-      validate_link(link)
+      x = validate_link(link)
+      puts x
+      x
     end
   end
   
+  
+  private
   
   def self.validate_relative_anchor(page, link)
     link.gsub!(/^.+#/, '')
@@ -28,9 +32,7 @@ class Check
       :invalid
     end
     if uri.class == URI::HTTP  
-      puts uri.class
       response = Net::HTTP.get_response(uri)
-      puts response.code
       case response.code
       when '404'
         :not_found
@@ -38,7 +40,7 @@ class Check
         :forbidden
       when '301'
         :moved_permanently
-      when '302'
+      when '302' # Should this be removed? This whole list configurable?
         :found
       when '303'
         :see_other
@@ -49,4 +51,5 @@ class Check
       end
     end
   end
+  
 end

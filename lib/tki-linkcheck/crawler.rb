@@ -1,4 +1,5 @@
 class Crawler
+
   def initialize(site)
     @site = site
   end
@@ -15,6 +16,7 @@ class Crawler
     end
     post_cleanup
   end
+  
   
   private
   
@@ -58,8 +60,5 @@ class Crawler
   def post_cleanup
 
   end
+  
 end
-
-site = Site.new('http://scienceonline.tki.org.nz/')
-
-Crawler.new(site).crawl

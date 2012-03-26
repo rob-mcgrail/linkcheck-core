@@ -1,4 +1,5 @@
 class LinkCache
+
   def self.checked?(link)
     R.sismember "#{$options.global_prefix}:checked", link
   end
@@ -14,4 +15,5 @@ class LinkCache
   def self.flush
     R.del "#{$options.global_prefix}:checked"
   end
+  
 end
