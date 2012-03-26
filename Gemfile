@@ -7,7 +7,7 @@ gem "SystemTimer", :platforms => :mri_18
 gem "trollop"
 
 group :test do
-  gem "minitest"
+  gem "minitest", :platforms => :mri_18
   gem "minitest-colorize"
   gem "webmock"
 end
