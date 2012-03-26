@@ -6,12 +6,17 @@ require 'minitest/autorun'
 class TestSite < MiniTest::Unit::TestCase
   def setup
     $redis = MockRedis.new
-    @site = Site.new 'example.com'
+    @site = Site.new 'http://example.com'
+  end
+  
+  
+  def teardown
+    load './lib/tki-linkcheck/redis.rb'
   end
 
 
   def test_domain_set_and_gettable
-    assert_equal 'example.com', @site.address
+    assert_equal 'http://example.com', @site.address
   end
   
   

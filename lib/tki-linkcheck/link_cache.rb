@@ -1,19 +1,20 @@
 class LinkCache
-
+  @@key = "#{$options.global_prefix}:checked"
+  
   def self.checked?(link)
-    $redis.sismember "#{$options.global_prefix}:checked", link
+    $redis.sismember @@key, link
   end
   
   
   def self.add(link)
     if link =~ /^http:/
-      $redis.sadd "#{$options.global_prefix}:checked", link
+      $redis.sadd @@key, link
     end
   end
   
   
   def self.flush
-    $redis.del "#{$options.global_prefix}:checked"
+    $redis.del @@key
   end
   
 end

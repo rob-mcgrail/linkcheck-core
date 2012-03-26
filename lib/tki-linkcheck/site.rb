@@ -48,7 +48,7 @@ class Site
   
   def flush_issues
     setpairs = {
-      @key[:issue_pages] => @key[:page],
+      @key[:pages] => @key[:page],
       @key[:problems] => @key[:problem],
     }
     flush_sets setpairs
