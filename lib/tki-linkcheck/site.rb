@@ -33,6 +33,7 @@ class Sites
       :problem => "#{@prefix}:problem",
       :problems => "#{@prefix}:problems",
       :blacklist => "#{@prefix}:blacklist",
+      :temp_blacklist => "#{@prefix}:blacklist:temp",
       :page_count => "#{@prefix}:count:pages",
       :broken_count => "#{@prefix}:count:broken",
       :check_count => "#{@prefix}:count:checked",
@@ -62,10 +63,30 @@ class Sites
   end
   
   
+  def blacklist(link)
+    $redis.sadd @key[:blacklist], link
+  end
+  
+  
+  def temp_blacklist(link)
+    $redis.sadd @key[:temp_blacklist], link
+  end
+  
+  
+  def remove_from_blacklist(link)
+    $redis.srem @key[:blacklist], link
+  end
+  
+  
   def reset_counters
     $redis.set @key[:page_count], 0
     $redis.set @key[:check_count], 0
     $redis.set @key[:broken_count], 0
+  end
+  
+  
+  def flush_temp_blacklist
+    $redis.del @key[:temp_blacklist]
   end
   
   
