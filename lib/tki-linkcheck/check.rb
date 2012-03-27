@@ -25,29 +25,32 @@ class Check
   
   def self.validate_link(link)
     if link =~ URI::regexp($options.valid_schemes)
-      uri = URI.parse(link)
-      if $options.checked_classes.member? uri.class
-        response = Net::HTTP.get_response(uri)
-        case response.code
-        when '404'
-          :not_found
-        when '403'
-          :forbidden
-        when '301'
-          :moved_permanently
-        when '302' # Should this be removed? This whole list configurable?
-          :found
-        when '303'
-          :see_other
-        when '503'
-          :unavailable
-        else
-          nil
+      begin
+        uri = URI.parse(link)
+        if $options.checked_classes.member? uri.class
+          response = Net::HTTP.get_response(uri)
+          case response.code
+          when '404'
+            :not_found
+          when '403'
+            :forbidden
+          when '301'
+            :moved_permanently
+          when '302' # Should this be removed? This whole list configurable?
+            :found
+          when '303'
+            :see_other
+          when '503'
+            :unavailable
+          else
+            nil
+          end
         end
+      rescue URI::InvalidURIError
+        :invalid
       end
     else
       :invalid
     end
-
   end
 end
