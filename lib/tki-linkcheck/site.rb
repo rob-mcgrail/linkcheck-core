@@ -1,9 +1,32 @@
-class Site
-  attr_reader :address
+class Sites
+  attr_reader :location, :last_checked
   
-  def initialize(address)
-    @address = address
-    @prefix = "#{$options.global_prefix}:#{@address}"
+  def self.create(properties = {})
+    if properties.has_key? :location
+      $redis.sadd "#{$options.global_prefix}:sites", properties[:location]
+      properties.each do |k,v|
+        $redis.hset "#{$options.global_prefix}:#{properties[:location]}", k.to_s, v.to_s
+      end
+      self.get(properties[:location])
+    end
+  end
+  
+  
+  def self.get(location)
+    if $redis.sismember "#{$options.global_prefix}:sites", location
+      self.new(location)
+    end
+  end
+  
+  
+  def initialize(location)
+    properties = $redis.hgetall "#{$options.global_prefix}:#{location}"
+    
+    @location = properties['location']
+    @last_checked = properties['last_checked']
+    
+    @prefix = "#{$options.global_prefix}:#{@location}"
+    
     @key = {
       :pages => "#{@prefix}:pages",
       :page => "#{@prefix}:page",
