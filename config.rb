@@ -6,4 +6,4 @@ $options = OpenStruct.new
 $options.datastore = 1
 $options.global_prefix = 'tki-linkcheck'
 $options.valid_schemes = ['http', 'ftp', 'https']
-$options.checked_schemes = [URI::HTTP]
+$options.checked_classes = [URI::HTTP]
