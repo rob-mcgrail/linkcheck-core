@@ -30,6 +30,8 @@ class Sites
     @key = {
       :pages => "#{@prefix}:pages",
       :page => "#{@prefix}:page",
+      :links => "#{@prefix}:links",
+      :link => "#{@prefix}:link",
       :problem => "#{@prefix}:problem",
       :problems => "#{@prefix}:problems",
       :blacklist => "#{@prefix}:blacklist",
@@ -45,6 +47,8 @@ class Sites
     $redis.multi do
       $redis.sadd @key[:pages], page
       $redis.sadd @key[:page] + ":#{page}", link
+      $redis.sadd @key[:links], link
+      $redis.sadd @key[:link] + ":#{link}", page
       $redis.sadd @key[:problems], problem.to_s
       $redis.sadd @key[:problem] + ":#{problem}", link
       $redis.incr @key[:broken_count]
@@ -93,6 +97,7 @@ class Sites
   def flush_issues
     setpairs = {
       @key[:pages] => @key[:page],
+      @key[:links] => @key[:link],
       @key[:problems] => @key[:problem],
     }
     flush_sets setpairs
