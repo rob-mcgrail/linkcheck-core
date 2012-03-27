@@ -16,5 +16,4 @@ class LinkCache
   def self.flush
     $redis.del @@key
   end
-  
 end

@@ -58,7 +58,5 @@ class Crawler
   
   
   def post_cleanup
-
   end
-  
 end

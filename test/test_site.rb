@@ -125,18 +125,3 @@ class TestSite < MiniTest::Unit::TestCase
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:problem:problem1")
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
