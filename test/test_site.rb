@@ -35,16 +35,23 @@ class TestSite < MiniTest::Unit::TestCase
     assert_nil Sites.create :irrelevant => 'ok'
   end
   
+
+  def test_values_set_and_gettable
+    assert_equal 'http://example.com', @site.location
+    assert_equal "#{Time.at(0).to_i}", @site.last_checked
+  end
   
-  def test_arbitrary_properties_settable
+  
+  def test_arbitrary_properties_storable
     Sites.create :location => 'http://new.example.com', :magic => 'yes' 
     assert_equal 'yes', $redis.hget("#{$options.global_prefix}:http://new.example.com", 'magic')
   end
 
 
-  def test_values_set_and_available
-    assert_equal 'http://example.com', @site.location
-    assert_equal "#{Time.at(0).to_i}", @site.last_checked
+  def test_arbitrary_properties_settable_and_gettable
+    site = Sites.create :location => 'http://new.example.com', :magic => 'yes' 
+    assert_equal 'http://new.example.com', site.location
+    assert_equal 'yes', site.magic
   end
   
   
