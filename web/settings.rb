@@ -1,5 +1,5 @@
 configure do
-  set :root, './web'
+  set :root, File.dirname(__FILE__)
   set :method_override, true # For HTTP verbs
   set :sessions, true
   set :logging, false # stops annoying double log messages.
