@@ -1,8 +1,9 @@
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
 
 Bundler.require(:web, :default)
 
+require './lib/tki-linkcheck'
 require './web/app'
 
 # Rack configuration
