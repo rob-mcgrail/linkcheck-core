@@ -31,7 +31,7 @@ class Check
           begin
             response = Net::HTTP.get_response(uri)
             code = response.code
-          rescue Interrupt
+          rescue
             code = nil
           end
           case code
@@ -44,7 +44,7 @@ class Check
           when '301'
             :moved_permanently
           when '302' # Should this be removed?
-            :found
+            nil
           when '303'
             :see_other
           when '503'
@@ -57,7 +57,7 @@ class Check
         :invalid
       end
     else
-      :invalid
+      :scheme_ignored
     end
   end
 end

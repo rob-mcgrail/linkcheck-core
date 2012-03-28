@@ -55,6 +55,17 @@ class TestSite < MiniTest::Unit::TestCase
   end
   
   
+  def test_can_get_all_sites
+    $redis.sadd "#{$options.global_prefix}:sites", 'http://new.example.com'
+    $redis.hset "#{$options.global_prefix}:http://new.example.com", 'location', 'http://new.example.com'
+    a = Sites.all
+    assert_kind_of Array, a
+    assert_equal 2, a.length
+    assert_kind_of Sites, a[0]
+    assert_kind_of Sites, a[1]
+  end
+  
+  
   def test_add_broken_creates_broken_data_sets_and_members
     @site.add_broken('http://example.com/a', 'http://a.com', 'problem1')
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:pages"), 'http://example.com/a'
@@ -85,14 +96,6 @@ class TestSite < MiniTest::Unit::TestCase
     @site.log_link 'http://a.com'
     @site.log_link 'http://b.com'
     assert_equal '2', $redis.get("#{$options.global_prefix}:#{@site.location}:count:checked")
-  end
-  
-  
-  def test_log_link_adds_checked_link_to_cache
-    @site.log_link 'http://a.com'
-    @site.log_link 'http://b.com'
-    assert LinkCache.checked? 'http://a.com'
-    assert LinkCache.checked? 'http://b.com'
   end
   
   

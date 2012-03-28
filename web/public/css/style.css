@@ -14,7 +14,26 @@
   min-height: 60px;
 }
 
+.tabBadge {
+  margin-left: 30px;
+  font-size: 75%;
+}
 
+.siteInfo {
+  line-height:40px;
+}
+
+.siteListHeader {
+  padding-bottom: 20px;
+}
+
+.siteListTable {
+  margin-left: 13px;
+}
+
+.smaller {
+  font-size: 92%;
+}
 
 
 
