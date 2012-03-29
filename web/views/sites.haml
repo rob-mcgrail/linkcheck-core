@@ -12,10 +12,40 @@
         .tab-content
             .tab-pane.active#recent
                 %table.siteListTable
+                    %thead
+                        %tr.goLeft
+                            %th
+                                Site
+                            %th
+                                Last checked
+                            %th
+                                Links
+                            %th
+                                Problem pages
+                            %th
+                                Pages checked
+                            %th
+                                Links checked
+                    %tbody
                     - @recent.each do |site|
                         != haml :_site, :locals => { :site => site }
                     
             .tab-pane#old
-                %table.table.siteListTable             
+                %table.table.siteListTable
+                    %thead.pull-left
+                        %tr
+                            %th
+                                Site
+                            %th
+                                Last checked
+                            %th
+                                Links
+                            %th
+                                Problem pages
+                            %th
+                                Pages checked
+                            %th
+                                Links checked
+                    %tbody             
                     - @old.each do |site|
                         != haml :_site, :locals => { :site => site }

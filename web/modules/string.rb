@@ -17,11 +17,15 @@ class String
     Time.at(self.to_i).strftime('%a %e %b %Y')
   end
   
-  def slug
+  def to_slug
     self.gsub('http://', '').gsub('.', '-dot-')
   end
   
-  def un_slug
+  def from_slug
     'http://' + self.gsub('-dot-', '.')
+  end
+  
+  def proper_case
+    self.slice(0,1).capitalize + self.slice(1..-1)
   end
 end

@@ -4,15 +4,29 @@
             != @site.location
             %small
                 != @site.last_checked.to_time if @site.last_checked
-        
-        - @pages.each do |page, hash_of_problems|
+- i = 0               
+- @pages.each do |page, hash_of_problems|
+    .row
+        .span12 
             %h3.pageTitle
-                != link_to(page, page)
-                - hash_of_problems.each do |problem, array|
-                    - unless array.empty?
-                        %h4.problemLabel
-                            != problem.gsub('_', ' ')
-                        %ul
-                            - array.each do |link|
-                                %li
+                != link_to(page, page, :class => 'subtleLink')
+            %hr.thin
+    - hash_of_problems.each do |problem, array|
+        - unless array.empty?
+            .row
+                .span12
+                    %h4.problemLabel
+                        != problem.gsub('_', ' ').proper_case
+           
+            .row
+                %ul.unstyled
+                    - array.each do |link|
+                        - i += 1
+                        
+                        .pageInfo{:id => "row-#{i}"}
+                            .span8
+                                %li.link
                                     != link_to(link, link)
+                            .span4
+                                != haml :_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+

@@ -45,16 +45,12 @@
         %script{:src => "//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
         :javascript
             window.jQuery || document.write('<script src="/js/libs/jquery-1.7.1.min.js"><\/script>')    
-
-        -# Google pretify
-        %script{:src => "js/libs/prettify/prettify.js"}
-        %script prettyPrint();
                 
         -# Remove bootstrap scripts as required
         -# != javascript_script_tag "js/libs/bootstrap/transition.js"
         != javascript_script_tag "js/libs/bootstrap/alert.js"
         -# != javascript_script_tag "js/libs/bootstrap/modal.js"
-        -# != javascript_script_tag "js/libs/bootstrap/dropdown.js"
+        != javascript_script_tag "js/libs/bootstrap/dropdown.js"
         -# != javascript_script_tag "js/libs/bootstrap/scrollspy.js"
         != javascript_script_tag "js/libs/bootstrap/tab.js"
         != javascript_script_tag "js/libs/bootstrap/tooltip.js"
