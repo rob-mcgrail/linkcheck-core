@@ -1,0 +1,34 @@
+- i = 0               
+- @links.each do |link, hash_of_problems|
+    .row
+        .span12 
+            %h3.pageTitle
+                != link_to(link, link, :class => 'subtleLink')
+            %hr.thin
+    - hash_of_problems.each do |problem, array|
+        - unless array.empty?
+            .row
+                .span12
+                    %h4.problemLabel
+                        != problem.gsub('_', ' ').proper_case
+           
+            .row
+                %ul.unstyled
+                    - array.each do |page|
+                        - i += 1
+                        
+                        .pageInfo{:id => "row-#{i}"}
+                            .span8
+                                %li.link
+                                    != link_to(page, page)
+                            .span4
+                                != haml :_un_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+                                
+                                
+                                ### You need to make a method that gets back:
+                                
+                                {'link' => {'problem' => [page, page]}}
+                                
+                                and create a partial for restoring links from blacklist...
+                                
+                                and make sure the unblacklist code for temp is good, and has tests

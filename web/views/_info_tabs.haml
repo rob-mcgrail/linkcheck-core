@@ -1,0 +1,9 @@
+.row
+    .span12
+        %ul.nav.nav-tabs
+            %li{:class => @tabs[:broken]}
+                != link_to('Broken Links', "/sites/#{@site.location.to_slug}")
+            %li{:class => @tabs[:temp_blacklist]}
+                != link_to('Temporary blacklist', "/sites/#{@site.location.to_slug}/blacklist/tmp")
+            %li{:class => @tabs[:blacklist]}
+                != link_to('Blacklist', "/sites/#{@site.location.to_slug}/blacklist")

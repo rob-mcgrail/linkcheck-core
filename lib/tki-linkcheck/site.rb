@@ -104,6 +104,7 @@ class Sites
 
 
   def links_by_problem_by_page
+    # returns {'page' => {'problem' => ['link', 'link']}}
     h = {}
     # get pages for the site
     $redis.smembers(@key[:pages]).each do |page|
@@ -125,8 +126,8 @@ class Sites
   end
   
   
-  def pages_by_link
-  
+  def pages_by_problem_by_blacklisted_link
+    # returns {'link' => {'problem' => ['page', 'page']}}  
   end
 
 

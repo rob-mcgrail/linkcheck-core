@@ -1,9 +1,3 @@
-.row
-    .span12
-        %h2.siteListHeader 
-            != @site.location
-            %small
-                != @site.last_checked.to_time if @site.last_checked
 - i = 0               
 - @pages.each do |page, hash_of_problems|
     .row
@@ -29,4 +23,3 @@
                                     != link_to(link, link)
                             .span4
                                 != haml :_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
-

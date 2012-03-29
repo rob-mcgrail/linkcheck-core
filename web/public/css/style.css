@@ -83,4 +83,9 @@ li.link {
     opacity: 0.2;
 }
 
+.siteListTableHeader {
+  color: gray;
+  font-size: 80%;
+}
+
 

@@ -35,6 +35,7 @@ end
 get '/?' do
   title 'sites'
   partition = partition_by_age(Sites.all)
+  puts partition[0].first.location
   @recent = partition[0]
   @old = partition[1]
   haml :sites
@@ -43,9 +44,28 @@ end
 
 get '/site/:location/?' do
   location = params[:location].from_slug
+  @tabs = {:broken => 'active'}
   @site = Sites.get(location)
   @pages = @site.links_by_problem_by_page
-  haml :info
+  haml :info_broken
+end
+
+
+get '/site/:location/blacklist?' do
+  location = params[:location].from_slug
+  @tabs = {:blacklist => 'active'}
+  @site = Sites.get(location)
+  @links = @site.links_by_problem_by_page
+  haml :info_blacklist
+end
+
+
+get '/site/:location/blacklist/tmp?' do
+  location = params[:location].from_slug
+  @tabs = {:temp_blacklist => 'active'}
+  @site = Sites.get(location)
+  @links = @site.links_by_problem_by_page
+  haml :info_blacklist
 end
 
 
