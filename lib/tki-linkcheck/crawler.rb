@@ -28,9 +28,8 @@ class Crawler
         puts problem
         if problem
           @site.add_broken page.url, link, problem
-        else
-          LinkCache.add link # don't check passed links uris again
         end
+        LinkCache.add link
         @site.log_link link
       end
     end

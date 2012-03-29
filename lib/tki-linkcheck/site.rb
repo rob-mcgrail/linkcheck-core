@@ -1,9 +1,12 @@
 class Sites
   def self.create(properties = {})
     if properties.has_key? :location
-      properties[:location].gsub!(/\/$/, '') # normalize locations
+      # normalize location strings
+      properties[:location].gsub!(/\/$/, '')
+      # add to sites list
       $redis.sadd "#{$options.global_prefix}:sites", properties[:location]
       properties.each do |k,v|
+        # stick all properties key pairs in a redis hash
         $redis.hset "#{$options.global_prefix}:#{properties[:location]}", k.to_s, v.to_s
       end
       self.get(properties[:location])
@@ -49,6 +52,7 @@ class Sites
       :temp_blacklist => "#{@prefix}:blacklist:temp",
       :page_count => "#{@prefix}:count:pages",
       :broken_count => "#{@prefix}:count:broken",
+      :broken_page_count => "#{@prefix}:count:broken_pages",
       :check_count => "#{@prefix}:count:checked",
     }
   end
@@ -86,24 +90,34 @@ class Sites
     else
       nil
     end
-  end # test for int
+  end
     
   
   def pages_with_brokens_count
-    $redis.scard @key[:pages]
+    s = $redis.get @key[:broken_page_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
   end
 
 
   def links_by_problem_by_page
     h = {}
+    # get pages for the site
     $redis.smembers(@key[:pages]).each do |page|
       h[page] = {}
+      # flush tmp keys
       $redis.del 'tmp:exclude', 'tmp:cleaned'
+      # get combined blacklist 
       $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
-      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
+      # store links not in blacklist
+      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude' 
       problems = $redis.smembers(@key[:problems])
-#      problems.delete('unknown')
+      #problems.delete('unknown')
       problems.each do |problem|
+        # for each problem type, store links also in that set
         h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
       end
     end
@@ -117,17 +131,22 @@ class Sites
 
 
   def add_broken(page, link, problem)
-    $redis.multi do
+    # increment broken page count if not already counted
+    unless $redis.sismember @key[:pages], page
+      $redis.incr @key[:broken_page_count]
       $redis.sadd @key[:pages], page
+    end
+    $redis.multi do
       $redis.sadd @key[:page] + ":#{page}", link
       $redis.sadd @key[:links], link
       $redis.sadd @key[:link] + ":#{link}", page
       $redis.sadd @key[:problems], problem.to_s
       $redis.sadd @key[:problem] + ":#{problem}", link
     end
+    # increment broke count if not blacklisted
     unless $redis.sismember @key[:blacklist], link
       $redis.incr @key[:broken_count]
-    end #add a test for this last addition...
+    end
   end
 
 
@@ -148,11 +167,26 @@ class Sites
   
   def blacklist(link)
     $redis.sadd @key[:blacklist], link
+    $redis.decr @key[:broken_count]
+    # make combined blacklist
+    $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
+    # get pages containing this link
+    $redis.smembers(@key[:link] + ":#{link}").each do |page|
+      # store non-blacklist links for pages 
+      $redis.sdiffstore 'tmp:remainder', @key[:page] + ":#{page}", 'tmp:exclude'
+      # if that is an empty set, decrement the broken page count
+      if $redis.scard('tmp:remainder') == 0
+        $redis.decr @key[:broken_page_count]
+      end
+      $redis.del 'tmp:remainder'
+    end
+    $redis.del 'tmp:exclude'
   end
   
   
   def temp_blacklist(link)
     $redis.sadd @key[:temp_blacklist], link
+    $redis.decr @key[:broken_count]
   end
   
   
@@ -165,6 +199,7 @@ class Sites
     $redis.set @key[:page_count], 0
     $redis.set @key[:check_count], 0
     $redis.set @key[:broken_count], 0
+    $redis.set @key[:broken_page_count], 0
   end
   
   
