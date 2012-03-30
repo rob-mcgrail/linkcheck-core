@@ -1,9 +1,10 @@
 .row
     .span12
         %ul.nav.nav-tabs
-            %li{:class => @tabs[:broken]}
-                != link_to('Broken Links' + "<span class='badge tabBadge'>#{@tab_cards[:pages]}</span>", "/site/#{@site.location.to_slug}")
-            %li{:class => @tabs[:temp_blacklist]}
+            - tabs={}; tabs[@context] = 'active'
+            %li{:class => tabs[:pages]}
+                != link_to('Broken link pages' + "<span class='badge tabBadge'>#{@tab_cards[:pages]}</span>", "/site/#{@site.location.to_slug}")
+            %li{:class => tabs[:temp_blacklist]}
                 != link_to('Temporary blacklist' + "<span class='badge tabBadge'>#{@tab_cards[:temp_blacklist]}</span>", "/site/#{@site.location.to_slug}/blacklist/temp")
-            %li{:class => @tabs[:blacklist]}
+            %li{:class => tabs[:blacklist]}
                 != link_to('Blacklist'  + "<span class='badge tabBadge'>#{@tab_cards[:blacklist]}</span>", "/site/#{@site.location.to_slug}/blacklist")

@@ -1,31 +1,25 @@
 - i = 0               
-- @links.each do |problem, hash_of_links|
-    .row
-        .span12 
-            %h3.pageTitle
-                != problem.gsub('_', ' ').proper_case
-            %hr.thin
-    - hash_of_links.each do |link, array|
-        - i += 1
-        - unless array.empty?
-            .row
-                .pageInfo{:id => "row-#{i}"}
-                    .span6
-                        != link_to(link, link)
-                    .span3
-                        -#!= haml :_un_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}", :}
-           
+- @links.each do |link, pages|
+    - i += 1
+    .blacklistBlock
+        .row
+            .pageInfo{:id => "row-#{i}"}
+                .span9
+                    != link_to(link, link)
+                .span3
+                    != haml :_un_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+                            
+        - unless pages.empty?
+
             .row
                 .span12
                     %a{:class => 'accordion-toggle subtleLink', :data => {:toggle => 'collapse', :target => "#table-#{i}"}}
-                        - s = "Appears on #{array.length} page"
-                        != array.length == 1 ? s : s.plural
+                        - s = "Appears on #{pages.length} page"
+                        != pages.length == 1 ? s : s.plural
             .row
                 .collapse{:id => "table-#{i}"}
                     %ul.unstyled
-                        - array.each do |page|
+                        - pages.each do |page|
                             .span12
                                 %li.link
-                                    != link_to(page, page)
-
-
+                                    != link_to(page, page, :class => 'subtleLink indentLink')
