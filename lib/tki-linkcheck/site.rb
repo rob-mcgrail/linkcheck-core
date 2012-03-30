@@ -88,20 +88,18 @@ class Sites
   end
   
   
-  def pages_by_blacklisted_links_by_problem(mode = :permanent)
-     # returns {'problem' => {'link' => ['page', 'page']}} 
+  def pages_by_blacklisted_link(mode = :permanent)
+     # returns {'link' => ['page', 'page']}
     opts = {
       :permanent => @key[:blacklist], 
       :temp => @key[:temp_blacklist]
     }
     h = {}
-    # cycle through problems
-    $redis.smembers(@key[:problems]).each do |problem|
-        # cycle through links belonging to a problem and the blacklist
-        $redis.sinter(opts[mode], @key[:problem] + ":#{problem}").each do |link|
-          h[problem] = {}
-          h[problem][link] = $redis.smembers @key[:link] + ":#{link}"  
-        end
+    $redis.smembers(opts[mode]).each do |link|
+      a = $redis.smembers @key[:link] + ":#{link}"
+      # ensure there's an array, instead of nil or 0
+      a = [] unless a.kind_of? Array 
+      h[link] = a 
     end
     h
   end

@@ -52,7 +52,7 @@ end
 
 get '/site/:location/?' do
   location = params[:location].from_slug
-  @tabs = {:broken => 'active'}
+  @context = :pages
   @site = Sites.get(location)
   @pages = @site.links_by_problem_by_page
   @tab_cards = tab_cardinalities(@site)
@@ -62,9 +62,14 @@ end
 
 get '/site/:location/blacklist?' do
   location = params[:location].from_slug
-  @tabs = {:blacklist => 'active'}
+  @context = :blacklist
   @site = Sites.get(location)
-  @links = @site.pages_by_blacklisted_links_by_problem(:permanent)
+  @links = @site.pages_by_blacklisted_link(:permanent)
+  @links.each do |k,v|
+    puts 'k: ' + k
+    puts v.class
+    puts v.length
+  end
   @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
@@ -72,9 +77,9 @@ end
 
 get '/site/:location/blacklist/temp?' do
   location = params[:location].from_slug
-  @tabs = {:temp_blacklist => 'active'}
+  @context = :temp_blacklist
   @site = Sites.get(location)
-  @links = @site.pages_by_blacklisted_links_by_problem(:temp)
+  @links = @site.pages_by_blacklisted_link(:temp)
   @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
@@ -93,5 +98,21 @@ post '/blacklist/permanently/?' do
   link = params[:link]
   Sites.get(location).blacklist link
   redirect "/site/#{location.to_slug}"
+end
+
+
+post '/blacklist/premanent/remove/?' do
+  location = params[:site]
+  link = params[:link]
+  Sites.get(location).remove_from_blacklist link
+  redirect "/site/#{location.to_slug}/blacklist"
+end
+
+
+post '/blacklist/temp/remove?' do
+  location = params[:site]
+  link = params[:link]
+  Sites.get(location).remove_from_temp_blacklist link
+  redirect "/site/#{location.to_slug}/blacklist/temp"
 end
 
