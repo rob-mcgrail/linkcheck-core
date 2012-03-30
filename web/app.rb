@@ -29,6 +29,14 @@ helpers do
       time < age
     end
   end
+  
+  def tab_cardinalities(site)
+    h = {}
+    h[:pages] = site.pages_with_brokens_count
+    h[:blacklist] = site.blacklist_count
+    h[:temp_blacklist] = site.temp_blacklist_count
+    h
+  end
 end 
 
 
@@ -47,6 +55,7 @@ get '/site/:location/?' do
   @tabs = {:broken => 'active'}
   @site = Sites.get(location)
   @pages = @site.links_by_problem_by_page
+  @tab_cards = tab_cardinalities(@site)
   haml :info_broken
 end
 
@@ -56,6 +65,7 @@ get '/site/:location/blacklist?' do
   @tabs = {:blacklist => 'active'}
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_links_by_problem(:permanent)
+  @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
 
@@ -65,6 +75,7 @@ get '/site/:location/blacklist/temp?' do
   @tabs = {:temp_blacklist => 'active'}
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_links_by_problem(:temp)
+  @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
 

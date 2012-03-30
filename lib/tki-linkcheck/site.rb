@@ -61,46 +61,6 @@ class Sites
   def method_missing(m, *args, &block)
     nil
   end
-  
-  
-  def broken_links_count
-    s = $redis.get @key[:broken_count]
-    if s
-      s.to_i
-    else
-      nil
-    end
-  end # test for int
-  
-  
-  def pages_checked_count
-    s = $redis.get @key[:page_count]
-    if s
-      s.to_i
-    else
-      nil
-    end
-  end # test for int
-
-
-  def links_checked_count
-    s = $redis.get @key[:check_count]
-    if s
-      s.to_i
-    else
-      nil
-    end
-  end
-    
-  
-  def pages_with_brokens_count
-    s = $redis.get @key[:broken_page_count]
-    if s
-      s.to_i
-    else
-      nil
-    end
-  end
 
 
   def links_by_problem_by_page
@@ -108,18 +68,20 @@ class Sites
     h = {}
     # get pages for the site
     $redis.smembers(@key[:pages]).each do |page|
-      h[page] = {}
       # flush tmp keys
       $redis.del 'tmp:exclude', 'tmp:cleaned'
       # get combined blacklist 
       $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
       # store links not in blacklist
-      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude' 
-      problems = $redis.smembers(@key[:problems])
-      # problems.delete('unknown')
-      problems.each do |problem|
-        # for each problem type, store links also in that set
-        h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
+      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
+      if $redis.scard('tmp:cleaned') > 0
+        h[page] = {}
+        problems = $redis.smembers(@key[:problems])
+        # problems.delete('unknown')
+        problems.each do |problem|
+          # for each problem type, store links also in that set
+          h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
+        end
       end
     end
     h
@@ -228,6 +190,56 @@ class Sites
       @key[:problems] => @key[:problem],
     }
     flush_sets setpairs
+  end
+  
+  
+  def broken_links_count
+    s = $redis.get @key[:broken_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end # test for int
+  
+  
+  def pages_checked_count
+    s = $redis.get @key[:page_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end # test for int
+
+
+  def links_checked_count
+    s = $redis.get @key[:check_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end
+    
+  
+  def pages_with_brokens_count
+    s = $redis.get @key[:broken_page_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end
+  
+  
+  def blacklist_count
+    $redis.scard @key[:blacklist]
+  end
+  
+  
+  def temp_blacklist_count
+    $redis.scard @key[:temp_blacklist]
   end
   
   
