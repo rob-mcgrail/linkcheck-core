@@ -230,7 +230,7 @@ class TestSite < MiniTest::Unit::TestCase
     @site.add_broken('http://example.com/c', 'http://e.com', :problem3)
     @site.blacklist 'http://b.com'
     @site.blacklist 'http://e.com'
-    structure = @site.pages_by_blacklisted_link_by_problem
+    structure = @site.pages_by_blacklisted_links_by_problem
     assert_equal 2, structure.length
     assert_kind_of Hash, structure
     assert_kind_of Hash, structure['problem1']
