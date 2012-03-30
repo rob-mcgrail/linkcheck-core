@@ -87,3 +87,11 @@ li.link {
   color: gray;
   font-size: 80%;
 }
+
+.blacklistBlock {
+  padding-bottom: 20px;
+}
+
+.indentLink {
+  margin-left: 10px;
+}
