@@ -55,16 +55,16 @@ get '/site/:location/blacklist?' do
   location = params[:location].from_slug
   @tabs = {:blacklist => 'active'}
   @site = Sites.get(location)
-  @links = @site.links_by_problem_by_page
+  @links = @site.pages_by_blacklisted_links_by_problem(:permanent)
   haml :info_blacklist
 end
 
 
-get '/site/:location/blacklist/tmp?' do
+get '/site/:location/blacklist/temp?' do
   location = params[:location].from_slug
   @tabs = {:temp_blacklist => 'active'}
   @site = Sites.get(location)
-  @links = @site.links_by_problem_by_page
+  @links = @site.pages_by_blacklisted_links_by_problem(:temp)
   haml :info_blacklist
 end
 

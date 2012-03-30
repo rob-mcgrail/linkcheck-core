@@ -126,7 +126,7 @@ class Sites
   end
   
   
-  def pages_by_blacklisted_link_by_problem(mode = :permanent)
+  def pages_by_blacklisted_links_by_problem(mode = :permanent)
      # returns {'problem' => {'link' => ['page', 'page']}} 
     opts = {
       :permanent => @key[:blacklist], 
