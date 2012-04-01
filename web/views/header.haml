@@ -1,4 +1,10 @@
 .row
-    .title.span12
-        %h1
-            != link_to('Linkcheck', '/')
+    .span12
+        .row
+
+            .title.span6
+                %h1
+                    != link_to('Linkcheck', '/')
+            - unless @admin
+                .span6.adminOptions
+                    != link_to('Manage sites', '/sites/manage')
