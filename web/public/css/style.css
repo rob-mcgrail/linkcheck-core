@@ -95,3 +95,8 @@ li.link {
 .indentLink {
   margin-left: 10px;
 }
+
+.adminOptions {
+  padding-top: 20px;
+  text-align: right;
+}
