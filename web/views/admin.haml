@@ -3,14 +3,19 @@
         .row
             .span6
                 %h2
-                    Active sites
+                    Active
+                    %a{:class => 'accordion-toggle subtleLink btn addSiteLink', :data => {:toggle => 'modal', :target => "#form", :show => 'false'}}
+                        Add +
                 %hr
-                
+
                 != haml :'admin/active'
-                
+
             .span6
                 %h2
-                    Inactive sites
+                    Inactive
                 %hr
-                
+
                 != haml :'admin/inactive'
+
+                .modal{:id => "form", :style => 'display: none;'}
+                    != haml :'admin/site_add_form'

@@ -1,6 +1,6 @@
 class Sites
   def self.create(properties = {})
-    if properties.has_key? :location
+    if properties.has_key? :location and properties[:location] =~ /^http/
       # normalize location strings
       properties[:location].gsub!(/\/$/, '')
       # add to sites list
@@ -12,8 +12,8 @@ class Sites
       self.get(properties[:location])
     end
   end
-  
-  
+
+
   def self.all
     keys = $redis.smembers "#{$options.global_prefix}:sites"
     sites = []
@@ -22,25 +22,25 @@ class Sites
     end
     sites
   end
-  
-  
+
+
   def self.get(location)
     self.new(location)
   end
-  
-  
+
+
   def self.deactivate(location)
     $redis.srem "#{$options.global_prefix}:sites", location
     $redis.sadd "#{$options.global_prefix}:inactive:sites", location
   end
-  
-  
+
+
   def self.activate(location)
     $redis.srem "#{$options.global_prefix}:inactive:sites", location
     $redis.sadd "#{$options.global_prefix}:sites", location
   end
-  
-  
+
+
   def self.inactive
     keys = $redis.smembers "#{$options.global_prefix}:inactive:sites"
     sites = []
@@ -52,17 +52,17 @@ class Sites
 
 
 
-  
+
   def initialize(location)
     properties = $redis.hgetall "#{$options.global_prefix}:#{location}"
-    
+
     properties.each do |k,v|
       instance_variable_set("@#{k}".to_sym, v)
       self.class.__send__(:attr_accessor, "#{k}".to_sym)
     end
-    
+
     @prefix = "#{$options.global_prefix}:#{@location}"
-    
+
     @key = {
       :pages => "#{@prefix}:pages",
       :page => "#{@prefix}:page",
@@ -78,8 +78,8 @@ class Sites
       :check_count => "#{@prefix}:count:checked",
     }
   end
-  
-  
+
+
   def method_missing(m, *args, &block)
     nil
   end
@@ -92,7 +92,7 @@ class Sites
     $redis.smembers(@key[:pages]).each do |page|
       # flush tmp keys
       $redis.del 'tmp:exclude', 'tmp:cleaned'
-      # get combined blacklist 
+      # get combined blacklist
       $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
       # store links not in blacklist
       $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
@@ -108,20 +108,20 @@ class Sites
     end
     h
   end
-  
-  
+
+
   def pages_by_blacklisted_link(mode = :permanent)
      # returns {'link' => ['page', 'page']}
     opts = {
-      :permanent => @key[:blacklist], 
+      :permanent => @key[:blacklist],
       :temp => @key[:temp_blacklist]
     }
     h = {}
     $redis.smembers(opts[mode]).each do |link|
       a = $redis.smembers @key[:link] + ":#{link}"
       # ensure there's an array, instead of nil or 0
-      a = [] unless a.kind_of? Array 
-      h[link] = a 
+      a = [] unless a.kind_of? Array
+      h[link] = a
     end
     h
   end
@@ -150,59 +150,59 @@ class Sites
   def log_link(link)
     $redis.incr @key[:check_count]
   end
-  
-  
+
+
   def log_page(page)
     $redis.incr @key[:page_count]
   end
-  
-  
+
+
   def log_crawl
     $redis.hset "#{@prefix}", 'last_checked', Time.now.to_i
   end
-  
-  
+
+
   def blacklist(link)
     $redis.sadd @key[:blacklist], link
     $redis.decr @key[:broken_count]
     adjust_broken_pages_count_by_blacklist(link, :adding)
   end
-  
-  
+
+
   def temp_blacklist(link)
     $redis.sadd @key[:temp_blacklist], link
     $redis.decr @key[:broken_count]
     adjust_broken_pages_count_by_blacklist(link, :adding)
   end
-  
-  
+
+
   def remove_from_blacklist(link)
     $redis.srem @key[:blacklist], link
     $redis.incr @key[:broken_count]
     adjust_broken_pages_count_by_blacklist(link, :removing)
   end
-  
-  
+
+
   def remove_from_temp_blacklist(link)
     $redis.srem @key[:temp_blacklist], link
     $redis.incr @key[:broken_count]
     adjust_broken_pages_count_by_blacklist(link, :removing)
   end
-  
-  
+
+
   def reset_counters
     $redis.set @key[:page_count], 0
     $redis.set @key[:check_count], 0
     $redis.set @key[:broken_count], 0
     $redis.set @key[:broken_page_count], 0
   end
-  
-  
+
+
   def flush_temp_blacklist
     $redis.del @key[:temp_blacklist]
   end
-  
-  
+
+
   def flush_issues
     setpairs = {
       @key[:pages] => @key[:page],
@@ -211,8 +211,8 @@ class Sites
     }
     flush_sets setpairs
   end
-  
-  
+
+
   def broken_links_count
     s = $redis.get @key[:broken_count]
     if s
@@ -221,8 +221,8 @@ class Sites
       nil
     end
   end # test for int
-  
-  
+
+
   def pages_checked_count
     s = $redis.get @key[:page_count]
     if s
@@ -241,8 +241,8 @@ class Sites
       nil
     end
   end
-    
-  
+
+
   def pages_with_brokens_count
     s = $redis.get @key[:broken_page_count]
     if s
@@ -251,26 +251,26 @@ class Sites
       nil
     end
   end
-  
-  
+
+
   def blacklist_count
     $redis.scard @key[:blacklist]
   end
-  
-  
+
+
   def temp_blacklist_count
     $redis.scard @key[:temp_blacklist]
   end
-  
-  
+
+
   private
-  
+
   def adjust_broken_pages_count_by_blacklist(link, context = :adding)
     # make combined blacklist
     $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
     # get pages containing this link
     $redis.smembers(@key[:link] + ":#{link}").each do |page|
-      # store non-blacklist links for pages 
+      # store non-blacklist links for pages
       $redis.sdiffstore 'tmp:remainder', @key[:page] + ":#{page}", 'tmp:exclude'
       i = $redis.scard('tmp:remainder')
       $redis.del 'tmp:remainder'
@@ -285,8 +285,8 @@ class Sites
     end
     $redis.del 'tmp:exclude'
   end
-  
-  
+
+
   def flush_sets(setpairs)
     setpairs.each do |superset, set_prefix|
       keys = $redis.smembers superset
