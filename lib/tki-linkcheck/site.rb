@@ -1,15 +1,17 @@
 class Sites
   def self.create(properties = {})
-    if properties.has_key? :location and properties[:location] =~ /^http/
-      # normalize location strings
-      properties[:location].gsub!(/\/$/, '')
-      # add to sites list
-      $redis.sadd "#{$options.global_prefix}:sites", properties[:location]
-      properties.each do |k,v|
-        # stick all properties key pairs in a redis hash
-        $redis.hset "#{$options.global_prefix}:#{properties[:location]}", k.to_s, v.to_s
+    if properties.has_key? :location
+      if properties[:location] =~ /^http/
+        # normalize location strings
+        properties[:location].gsub!(/\/$/, '')
+        # add to sites list
+        $redis.sadd "#{$options.global_prefix}:sites", properties[:location]
+        properties.each do |k,v|
+          # stick all properties key pairs in a redis hash
+          $redis.hset "#{$options.global_prefix}:#{properties[:location]}", k.to_s, v.to_s
+        end
+        self.get(properties[:location])
       end
-      self.get(properties[:location])
     end
   end
 
@@ -49,8 +51,6 @@ class Sites
     end
     sites
   end
-
-
 
 
   def initialize(location)
