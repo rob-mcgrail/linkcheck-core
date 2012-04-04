@@ -1,6 +1,5 @@
 source :rubygems
 
-gem "rake"
 gem "anemone"
 gem "redis"
 gem "SystemTimer", :platforms => :mri_18
@@ -14,7 +13,7 @@ group :test do
 end
 
 group :web do
-  gem "sinatra" 
+  gem "sinatra"
   gem "sinatra-flash"
   gem "thin"
   gem "unicorn"

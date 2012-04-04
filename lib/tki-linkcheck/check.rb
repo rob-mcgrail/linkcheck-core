@@ -26,9 +26,9 @@ class Check
 
 
   def validate_link(link)
-    if link =~ URI::regexp($options.valid_schemes)
+    if link.gsub(' ', '%20') =~ URI::regexp($options.valid_schemes)
       begin
-        uri = URI.parse(link)
+        uri = URI.parse(link.gsub(' ', '%20'))
       rescue URI::InvalidURIError
         :invalid
       end
@@ -57,10 +57,10 @@ class Check
           :unknown
         end
       else
-        :ignored
+        :ignored_for_uri_class
       end
     else
-      :ignored
+      :ignored_for_scheme
     end
   end
 

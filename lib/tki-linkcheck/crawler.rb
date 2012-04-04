@@ -5,10 +5,17 @@ class Crawler
 
 
   def crawl
+    opts = {
+      :discard_page_bodies => true,
+      :delay => $options.page_delay,
+      :redirect_limit => 1,
+      :depth_limit => 12,
+    }
     LinkCache.flush # only cleared if not recently used
     pre_cleanup
-    Anemone.crawl(@site.location, :discard_page_bodies => true, :delay => $options.page_delay) do |anemone|
+    Anemone.crawl(@site.location, opts) do |anemone|
       @site.log_crawl
+      anemone.skip_links_like /%23/ # anemone was confused by links like: /News#123
       anemone.on_every_page do |page|
         check_links(page) if page.doc
         @site.log_page page.url
@@ -49,13 +56,23 @@ class Crawler
 
   def clean_urls(a, page)
     a.map! do |link|
-      if link !~ /^[a-z]+:\/\// #doesn't start with a protocol
-        location = "http://#{page.url.host}/"
-        link = location + link.gsub(/^\//,'') # make absolute
+      if link !~ /^[a-z]+:\/\// # doesn't start with a protocol
+        if link =~ /^\// # does start with a slash
+          location = "http://#{page.url.host}/"
+          link = location + link.gsub(/^\//,'') # make absolute
+        else
+          # remove last portion of url
+          url = page.url.to_s
+          chop = /([^\/]+$)/.match(url).to_s
+          i = -chop.length-1
+          url = url[0..i]
+          # append relative url
+          link = url + link.gsub(/^\//,'') # make absolute
+        end
       else
         link
       end
-      #link = URI.escape(link).gsub('%23', '#')
+      link = link.gsub('%23', '#')
     end
     a
   end
