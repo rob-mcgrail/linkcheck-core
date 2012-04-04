@@ -17,7 +17,7 @@
                     - array.each do |link|
                         - i += 1
 
-                        .targetable{:id => "row-#{i}"}
+                        .targetable{:id => "row-#{i}", :class => "row-#{i}"}
                             .span8
                                 %li.link
                                     != link_to(link, link)
