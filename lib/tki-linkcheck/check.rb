@@ -3,7 +3,6 @@ class Check
   require 'net/http'
   require 'net/https'
 
-
   def validate(page, link)
     if link =~ /^#{Regexp.escape(page.url.to_s.gsub(/\/$/,''))}\/?#[^!]/
       validate_relative_anchor(page, link)
