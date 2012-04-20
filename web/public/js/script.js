@@ -36,3 +36,19 @@ $("form.backlistManagement").submit(function(event) {
   id = '.row-' + id[1];
   $(id).fadeOut();
 });
+
+//$("form.siteManagement").submit(function(event) {
+//  event.preventDefault();
+//  var $form = $( this ),
+//  site = $form.find( 'input[name="site"]' ).val(),
+//  url = $form.attr( 'action' );
+//  id = $form.attr( 'id' );
+//  $.post( url, { site: site, link: link },
+//    function( data ) {
+//      // need to load the whole of both lists again... seems painful...
+//    }
+//  );
+//  id = id.split('-');
+//  id = '.row-' + id[1];
+//  $(id).fadeOut();
+//});
