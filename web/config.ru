@@ -3,7 +3,7 @@ require 'bundler/setup'
 
 Bundler.require(:web, :default)
 
-require './web/app'
+require './app'
 
 # Rack configuration
 
