@@ -7,7 +7,13 @@ class Check
     if link =~ /^#{Regexp.escape(page.url.to_s.gsub(/\/$/,''))}\/?#[^!]/
       validate_relative_anchor(page, link)
     else
-      validate_link(link)
+      if LinkCache.checked? link
+        LinkCache.get link
+      else
+        response = validate_link(link)
+        LinkCache.add link, response
+        response
+      end
     end
   end
 
