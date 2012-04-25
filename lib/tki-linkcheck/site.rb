@@ -143,7 +143,7 @@ class Sites
       end
       # increment broke count if not blacklisted
       unless $redis.sismember @key[:blacklist], link
-        $redis.incr @key[:broken_count] unless LinkCache.checked? link
+        $redis.incr @key[:broken_count]
       end
     end
   end
