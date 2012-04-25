@@ -143,14 +143,14 @@ class Sites
       end
       # increment broke count if not blacklisted
       unless $redis.sismember @key[:blacklist], link
-        $redis.incr @key[:broken_count]
+        $redis.incr @key[:broken_count] unless LinkCache.checked? link
       end
     end
   end
 
 
   def log_link(link)
-    $redis.incr @key[:check_count]
+    $redis.incr @key[:check_count] unless LinkCache.checked? link
   end
 
 
