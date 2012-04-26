@@ -12,6 +12,7 @@ class Crawler
       :depth_limit => 12,
       :accept_cookies => true,
       :cookies => SSOAuth.get_cookies(@site.location),
+      :skip_query_strings => true,
     }
     LinkCache.flush
     pre_cleanup
