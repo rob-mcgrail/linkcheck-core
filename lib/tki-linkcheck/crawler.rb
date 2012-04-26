@@ -38,8 +38,8 @@ class Crawler
   def check_links(page)
     links = extract_links(page)
     links.each do |link|
-      check = Check.new
-      problem = check.validate(page, link)
+      check = Check.new(page, link)
+      problem = check.validate
       puts problem # remove
       if problem
         @site.add_broken page.url, link, problem
