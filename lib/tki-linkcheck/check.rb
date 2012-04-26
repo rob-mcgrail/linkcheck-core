@@ -77,8 +77,7 @@ class Check
 
 
   def local_check(sym)
-    domain = @page.url.match(/\/\/(.[^\/]+)/)
-    if domain =~ @link
+    if @page.url.host =~ @link
       nil
     else
       sym
