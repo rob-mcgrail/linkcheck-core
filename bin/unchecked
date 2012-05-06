@@ -1,0 +1,10 @@
+require 'rubygems'
+require './lib/tki-linkcheck'
+
+LinkCache.force_flush
+
+sites = Sites.partition_by_age
+
+sites.each do |site|
+  Crawler.new(site).crawl
+end
