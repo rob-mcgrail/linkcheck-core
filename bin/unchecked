@@ -3,7 +3,7 @@ require './lib/tki-linkcheck'
 
 LinkCache.force_flush
 
-sites = Sites.partition_by_age
+sites = Sites.partition_by_age[1]
 
 sites.each do |site|
   Crawler.new(site).crawl
