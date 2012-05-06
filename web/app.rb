@@ -22,13 +22,6 @@ end
 
 
 helpers do
-  def partition_by_age(sites, age=1209600)
-    partition = sites.partition do |site|
-      time = Time.now.to_i - site.last_checked.to_i
-      time < age
-    end
-  end
-
   def tab_cardinalities(site)
     h = {}
     h[:pages] = site.pages_with_brokens_count
@@ -41,7 +34,7 @@ end
 
 get '/?' do
   title 'sites'
-  partition = partition_by_age(Sites.all)
+  partition = Sites.partition_by_age
   @recent = partition[0]
   @old = partition[1]
   haml :sites

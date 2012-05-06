@@ -53,6 +53,15 @@ class Sites
   end
 
 
+  def self.partition_by_age(age=1209600)
+    sites = Sites.all
+    partition = sites.partition do |site|
+      time = Time.now.to_i - site.last_checked.to_i
+      time < age
+    end
+  end
+
+
   def initialize(location)
     properties = $redis.hgetall "#{$options.global_prefix}:#{location}"
 
