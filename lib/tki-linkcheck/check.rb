@@ -1,3 +1,5 @@
+REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError, Errno::ECONNREFUSED]
+
 class Check
   require 'uri'
   require 'net/http'
@@ -89,7 +91,7 @@ class Check
     begin
       response = Net::HTTP.get_response(uri)
       code = response.code
-    rescue Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError
+    rescue REQUEST_EXCEPTIONS
       retry_count = (retry_count || 0) + 1
       retry unless retry_count >= $options.retry_count
       code = 'failed'
@@ -106,7 +108,7 @@ class Check
       request = Net::HTTP::Get.new(uri.request_uri)
       response = http.request(request)
       code = response.code
-    rescue Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError
+    rescue REQUEST_EXCEPTIONS
       retry_count = (retry_count || 0) + 1
       retry unless retry_count >= $options.retry_count
       code = 'failed'
