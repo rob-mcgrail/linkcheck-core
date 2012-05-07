@@ -29,6 +29,13 @@ helpers do
     h[:temp_blacklist] = site.temp_blacklist_count
     h
   end
+
+  def pdf(page, destination)
+    location = params[:location]
+    str = "#{options.pdf} #{request.host}:#{request.port}#{page} #{settings.public_folder}/pdf#{destination}"
+    system str
+    "/pdf#{destination}"
+  end
 end
 
 
@@ -91,10 +98,8 @@ end
 
 get '/report/:location' do
   location = params[:location]
-  str = "/usr/bin/wkhtmltopdf #{request.host}:#{request.port}/site/#{location} #{settings.public_folder}/pdf/#{params[:location]}.pdf"
-  puts str
-  system str
-  "<a href=\"/pdf/#{params[:location]}.pdf\">PDF</a>"
+  @pdf_url = pdf "/site/#{location}", "/testing.pdf"
+  redirect @pdf_url
 end
 
 
