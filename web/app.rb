@@ -97,7 +97,7 @@ get '/sites/add' do
 end
 
 
-get '/report/:location' do
+get '/site/:location/pdf' do
   location = params[:location]
   @pdf_url = pdf("/site/#{location}", "/testing.pdf")
   redirect @pdf_url
