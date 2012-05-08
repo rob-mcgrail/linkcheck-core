@@ -6,18 +6,19 @@ configure do
   set :sessions, true
   set :logging, false # stops annoying double log messages.
   set :static, false # see config.ru for dev mode static file serving
-  set :pdf, '/usr/bin/wkhtmltopdf'
 end
 
 configure :development do
   set :raise_errors, true
   set :show_exceptions, true
+  set :pdf, '/usr/bin/wkhtmltopdf'
   set :haml, {:format => :html5, :ugly => false, :escape_html => true}
 end
 
 configure :production do
   set :raise_errors, false
   set :show_exceptions, false
+  set :pdf, 'xvfb-run -a -s "-screen 0 640x480x16" /usr/bin/wkhtmltopdf' # for debian
   set :haml, {:format => :html5, :ugly => true, :escape_html => true}
 end
 
