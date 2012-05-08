@@ -61,7 +61,7 @@ class TestCheck < MiniTest::Unit::TestCase
     assert_nil Check.new(@doc, 'http://anothersite.com/page5').validate
 
     stub_request(:get, "anothersite.com/page6").to_return(:status => 303)
-    assert_equal :see_other, Check.new(@doc, 'http://anothersite.com/page6').validate
+    assert_nil Check.new(@doc, 'http://anothersite.com/page6').validate
 
     stub_request(:get, "example.com/page7").to_return(:status => 503)
     assert_equal :unavailable, Check.new(@doc, 'http://example.com/page7').validate

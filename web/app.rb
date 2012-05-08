@@ -32,6 +32,7 @@ helpers do
   end
 
   def pdf(page, destination)
+    # echo "<b>Hello</b> World!" | wkhtmltopdf - foo.pdf --user-style-sheet /url/css.css
     location = params[:location]
     str = "#{settings.pdf} #{request.host}:#{request.port}#{page} #{settings.public_folder}/pdf#{destination}"
     system str
