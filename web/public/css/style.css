@@ -70,7 +70,12 @@ a {
 
 .linkTitle {
   font-size: 100%;
+}
+
+
+.blockOfPages {
   padding-bottom: 10px;
+  padding-top: 5px;
 }
 
 .goLeft {
