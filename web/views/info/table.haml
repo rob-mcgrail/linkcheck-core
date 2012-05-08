@@ -1,25 +1,28 @@
 - i = 0
-- @pages.each do |page, hash_of_problems|
-    .row
-        .span12
-            %h3.pageTitle
-                != link_to(page, page, :class => 'subtleLink')
-            %hr.thin
-    - hash_of_problems.each do |problem, array|
-        - unless array.empty?
-            .row
-                .span12
-                    %h4.problemLabel
-                        != problem.gsub('_', ' ').proper_case
-
-            .row
-                %ul.unstyled
-                    - array.each do |link|
+- @problems.each do |problem, hash_of_links|
+    - unless hash_of_links.empty?
+        .row
+            .span12
+                %h3.problemTitle
+                    != problem.gsub('_', ' ').proper_case
+                %hr.thin
+                - hash_of_links.each do |link, array|
+                    - unless array.empty?
                         - i += 1
-
                         .targetable{:id => "row-#{i}", :class => "row-#{i}"}
-                            .span8
-                                %li.link
-                                    != link_to(link, link)
-                            .span4
-                                != haml :'info/blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+                            .row
+                                .span8
+                                    %h4.linkTitle
+                                        != link_to(link, link, :target => 'none')
+                                .span4
+                                    != haml :'info/blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+                            .row
+                                .span12
+                                    %a{:class => 'accordion-toggle subtleLink', :data => {:toggle => 'collapse', :target => "#table-#{i}"}}
+                                        - s = "Appears on #{array.length} page"
+                                        != array.length == 1 ? s + ' +' : s.plural + " +"
+                                    .collapse.in{:id => "table-#{i}"}
+                                        %ul.unstyled
+                                            - array.each do |link|
+                                                %li.link
+                                                    != link_to(link, link, :target => 'none')

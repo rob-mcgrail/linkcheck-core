@@ -56,7 +56,7 @@ get '/site/:location/?' do
   title location
   @context = :pages
   @site = Sites.get(location)
-  @pages = @site.pages_by_link_by_problem
+  @problems = @site.pages_by_link_by_problem
   @tab_cards = tab_cardinalities(@site)
   haml :info_broken
 end
