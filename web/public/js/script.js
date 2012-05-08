@@ -16,39 +16,3 @@ $(".targetable").hover(
     $('.' + currentId).addClass("opacitize");
   }
 );
-
-
-$("form.backlistManagement").submit(function(event) {
-  event.preventDefault();
-  var $form = $( this ),
-  site = $form.find( 'input[name="site"]' ).val(),
-  link = $form.find( 'input[name="link"]' ).val(),
-  url = $form.attr( 'action' );
-  id = $form.attr( 'id' );
-  $.post( url, { site: site, link: link },
-    function( data ) {
-      $('#tab-pages').load('/ajax/count/pages', {site: site});
-      $('#tab-temp').load('/ajax/count/temp', {site: site});
-      $('#tab-blacklist').load('/ajax/count/blacklist', {site: site});
-    }
-  );
-  id = id.split('-');
-  id = '.row-' + id[1];
-  $(id).fadeOut();
-});
-
-//$("form.siteManagement").submit(function(event) {
-//  event.preventDefault();
-//  var $form = $( this ),
-//  site = $form.find( 'input[name="site"]' ).val(),
-//  url = $form.attr( 'action' );
-//  id = $form.attr( 'id' );
-//  $.post( url, { site: site, link: link },
-//    function( data ) {
-//      // need to load the whole of both lists again... seems painful...
-//    }
-//  );
-//  id = id.split('-');
-//  id = '.row-' + id[1];
-//  $(id).fadeOut();
-//});
