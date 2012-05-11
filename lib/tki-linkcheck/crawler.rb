@@ -1,4 +1,6 @@
 class Crawler
+  STATIC_EXTENSIONS = %w(flv swf png jpg gif asx zip rar tar 7z gz jar js css dtd xsd ico raw mp3 mp4 wav wmv ape aac ac3 wma aiff mpg mpeg avi mov ogg mkv mka asx asf mp2 m1v m3u f4v pdf doc docx xls ppt pps bin exe rss xml)
+
   def initialize(site)
     @site = site
   end
@@ -19,7 +21,7 @@ class Crawler
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
-        anemone.skip_links_like /%23/
+        anemone.skip_links_like /%23/, /\.#{STATIC_EXTENSIONS.join('|')}$/
         anemone.on_every_page do |page|
           check_links(page) if page.doc
           @site.log_page page.url
