@@ -7,4 +7,5 @@ sites = Sites.all
 
 sites.each do |site|
   Crawler.new(site).crawl
+  GC.start # haha nice try
 end
