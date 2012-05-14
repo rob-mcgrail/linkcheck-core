@@ -12,10 +12,10 @@ class LinkCache
 
   def self.get(link)
     response = $redis.get @@keys[:response] + link
-    if response == ""
+    if response == "" || nil
       nil
     else
-      response.to_sym
+      response.to_sym if response
     end
   end
 
