@@ -327,4 +327,30 @@ class TestSite < MiniTest::Unit::TestCase
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:problems")
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:problem:problem1")
   end
+
+
+  def test_purge_orphaned_blacklist_removes_orphaned_blacklist_items_and_nothing_else
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://c.com', :problem1)
+    @site.blacklist 'http://a.com'
+    @site.blacklist 'http://b.com'
+    @site.blacklist 'http://c.com'
+
+    structure = @site.pages_by_blacklisted_link
+    assert_equal ['http://example.com/a'], structure['http://a.com']
+
+    # simulating new crawl
+    @site.reset_counters
+    @site.flush_temp_blacklist
+    @site.flush_issues
+    @site.add_broken('http://example.com/a', 'http://c.com', :problem1)
+    @site.purge_orphaned_blacklist_items
+
+    structure = @site.pages_by_blacklisted_link
+    assert_nil structure['http://a.com']
+    assert_nil structure['http://b.com']
+
+    assert_equal ['http://example.com/a'], structure['http://c.com']
+  end
 end
