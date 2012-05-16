@@ -36,8 +36,6 @@ class Crawler
   end
 
 
-  private
-
   def check_links(page)
     links = extract_links(page)
     links.each do |link|
@@ -51,6 +49,8 @@ class Crawler
     end
   end
 
+
+  private
 
   def extract_links(page)
     require 'uri'
