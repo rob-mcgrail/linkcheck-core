@@ -41,39 +41,45 @@ class Check
   def validate_link
     if @link.gsub(' ', '%20') =~ URI::regexp($options.valid_schemes)
       begin
-        uri = URI.parse(@link.gsub(' ', '%20'))
+        link = @link.gsub(' ', '%20')
+        uri = URI.parse(link)
       rescue URI::InvalidURIError
-        :invalid
+        return :invalid
       end
       if $options.checked_classes.member? uri.class
-        if uri.class == URI::HTTPS
-          code = https_request(uri)
-        else
-          code = http_request(uri)
-        end
-        case code
-        when '200'
-          nil
-        when '404'
-          :not_found
-        when '403'
-          :forbidden
-        when '301'
-          local_check :moved_permanently
-        when '302' # Should this be removed?
-          nil
-        when '303'
-          nil
-        when '503'
-          :unavailable
-        else
-          :unknown
-        end
+        response(uri)
       else
         :ignored_for_uri_class
       end
     else
-      :ignored_for_scheme
+      :invalid
+    end
+  end
+
+
+  def response(uri)
+    if uri.class == URI::HTTPS
+      code = https_request(uri)
+    else
+      code = http_request(uri)
+    end
+    case code
+    when '200'
+      nil
+    when '404'
+      :not_found
+    when '403'
+      :forbidden
+    when '301'
+      local_check :moved_permanently
+    when '302' # Should this be removed?
+      nil
+    when '303'
+      nil
+    when '503'
+      :unavailable
+    else
+      :unknown
     end
   end
 
