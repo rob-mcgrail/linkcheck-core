@@ -24,14 +24,6 @@ end
 
 
 helpers do
-  def tab_cardinalities(site)
-    h = {}
-    h[:pages] = site.pages_with_brokens_count
-    h[:blacklist] = site.blacklist_count
-    h[:temp_blacklist] = site.temp_blacklist_count
-    h
-  end
-
   def pdf(page, destination)
     # echo "<b>Hello</b> World!" | wkhtmltopdf - foo.pdf --user-style-sheet /url/css.css
     location = params[:location]
@@ -57,7 +49,6 @@ get '/site/:location/?' do
   @context = :pages
   @site = Sites.get(location)
   @problems = @site.pages_by_link_by_problem
-  @tab_cards = tab_cardinalities(@site)
   haml :info_broken
 end
 
@@ -68,7 +59,6 @@ get '/site/:location/blacklist/?' do
   @context = :blacklist
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_link(:permanent)
-  @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
 
@@ -79,7 +69,6 @@ get '/site/:location/blacklist/temp/?' do
   @context = :temp_blacklist
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_link(:temp)
-  @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
 
@@ -104,28 +93,6 @@ get '/site/:location/pdf' do
   @pdf_url = pdf("/site/#{location}", "/#{Time.now.to_i}.pdf")
   redirect @pdf_url
 end
-
-
-
-#post '/ajax/count/pages' do
-#  @site = Sites.get(params[:site])
-#  status 200
-#  body @site.pages_with_brokens_count.to_s
-#end
-
-
-#post '/ajax/count/temp' do
-#  @site = Sites.get(params[:site])
-#  status 200
-#  body @site.temp_blacklist_count.to_s
-#end
-
-
-#post '/ajax/count/blacklist' do
-#  @site = Sites.get(params[:site])
-#  status 200
-#  body @site.blacklist_count.to_s
-#end
 
 
 post '/sites/add' do
