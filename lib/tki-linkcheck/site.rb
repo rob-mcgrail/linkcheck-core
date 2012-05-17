@@ -315,7 +315,7 @@ class Sites
 
   def self.purge_orphaned_blacklist_items
     Sites.all.each do |location|
-      @site = Site.new('location')
+      @site = Sites.new('location')
       @site.purge_orphaned_blacklist_items
     end
   end

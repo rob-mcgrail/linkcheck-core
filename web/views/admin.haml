@@ -1,21 +1,25 @@
 .row
     .span12
+        %h2 Admin
+        %hr
+        %h3 Orphaned blacklist items
+        %br
+
         .row
-            .span6
-                %h2
-                    Active
-                    %a{:class => 'accordion-toggle subtleLink btn addSiteLink', :data => {:toggle => 'modal', :target => "#form", :show => 'false'}}
-                        Add +
-                %hr
+            .span3
+                %a{:class => 'accordion-toggle btn btn-danger', :data => {:toggle => 'modal', :target => "#form", :show => 'false'}}
+                    Delete orphaned blacklist items
+            .well.span5
 
-                != haml :'admin/active'
+                %p
+                    Permanently blacklisted items may eventually stop turning up in the weekly crawl as broken links. However, the blacklist item will remain. It is worthwhile occasionally deleting these "orphaned" blacklist items to free up datastore memory and calculation load.
+                %p
+                    Deleting orphaned blacklist items will check every site's pemanent blacklist for links which are not considered broken at that time.
+                %p
+                    Don't use this unless you understand what it does.
 
-            .span6
-                %h2
-                    Inactive
-                %hr
+                %br
 
-                != haml :'admin/inactive'
 
-                .modal{:id => "form", :style => 'display: none;'}
-                    != haml :'admin/site_add_form'
+.modal{:id => "form", :style => 'display: none;'}
+    != haml :'admin/remove_orphans_form'

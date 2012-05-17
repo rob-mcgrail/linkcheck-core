@@ -1,0 +1,12 @@
+.modal-header
+    %h2
+        %a{:class => 'close', :data => {:dismiss => 'modal'}} x
+        Delete orphaned blacklist items
+.modal-body
+    %form{:action => '/purge_orphaned_blacklist_items', :method => 'post'}
+        %p.alert
+            Delete permanent blacklist items which no longer appear as broken on a site's page? This cannot be undone.
+        .modal-footer
+            %a{:class => 'btn', :data => {:dismiss => 'modal'}} Cancel
+            %button{:type => 'submit', :class => 'btn btn-danger'}
+                Delete

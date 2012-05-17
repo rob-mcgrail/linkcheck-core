@@ -6,5 +6,7 @@
                 %h1
                     != link_to('Linkcheck', '/')
             - unless @admin
-                .span6.adminOptions
+                .span5.adminOptions
                     != link_to('Manage sites', '/sites/manage')
+                .span1.adminOptions
+                    != link_to('Admin', '/admin')
