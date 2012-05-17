@@ -81,12 +81,20 @@ get '/sites/manage/?' do
    haml :admin
 end
 
-
+# does this actually do anything?
 get '/sites/add' do
   title 'add'
   haml :add
 end
 
+# to come:
+#
+#
+post '/purge_orphaned_blacklist_items' do
+  Sites.purge_orphaned_blacklist_items
+  redirect '/sites/manage'
+end
+#
 
 get '/site/:location/pdf' do
   location = params[:location]
