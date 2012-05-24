@@ -15,6 +15,7 @@ class Crawler
       :accept_cookies => true,
       :cookies => SSOAuth.get_cookies(@site.location),
       :skip_query_strings => true,
+      :threads => 1,
     }
     LinkCache.flush
     pre_cleanup
