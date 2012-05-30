@@ -45,7 +45,7 @@ STATIC_EXTENSIONS = %w(flv swf png jpg gif asx zip rar tar 7z gz jar js css dtd 
       if problem
         @site.add_broken page.url, link, problem
       end
-      sleep $options.check_delay# if link =~
+      sleep $options.check_delay
     end
   end
 
