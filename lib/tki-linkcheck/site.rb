@@ -75,11 +75,11 @@ class Sites
 
     @key = {
       :pages => "#{@prefix}:pages",
-      :page => "#{@prefix}:page",
+      :page => "#{@prefix}:page:",
       :links => "#{@prefix}:links",
-      :link => "#{@prefix}:link",
-      :problem => "#{@prefix}:problem",
+      :link => "#{@prefix}:link:",
       :problems => "#{@prefix}:problems",
+      :problem => "#{@prefix}:problem:",
       :blacklist => "#{@prefix}:blacklist",
       :temp_blacklist => "#{@prefix}:blacklist:temp",
       :page_count => "#{@prefix}:count:pages",
@@ -99,11 +99,11 @@ class Sites
     already_added = $redis.sismember @key[:links], link
     $redis.multi do
       $redis.sadd @key[:pages], page
-      $redis.sadd @key[:page] + ":#{page}", link
+      $redis.sadd @key[:page] + page, link
       $redis.sadd @key[:links], link
-      $redis.sadd @key[:link] + ":#{link}", page
+      $redis.sadd @key[:link] + link, page
       $redis.sadd @key[:problems], problem.to_s
-      $redis.sadd @key[:problem] + ":#{problem}", link
+      $redis.sadd @key[:problem] + problem.to_s, link
     end
     # increment broken count if not blacklisted
     unless blacklisted || already_added
@@ -191,13 +191,13 @@ class Sites
       # get combined blacklist
       $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
       # store links not in blacklist
-      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
+      $redis.sdiffstore 'tmp:cleaned', @key[:page] + page, 'tmp:exclude'
       if $redis.scard('tmp:cleaned') > 0
         h[page] = {}
         problems = $redis.smembers(@key[:problems])
         problems.each do |problem|
           # for each problem type, store links also in that set
-          h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
+          h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + problem
         end
       end
     end
@@ -216,10 +216,10 @@ class Sites
       # get combined blacklist
       $redis.sunionstore 'tmp:exclude:#{@location}', @key[:blacklist], @key[:temp_blacklist]
       # store links not in blacklist
-      $redis.sdiffstore 'tmp:cleaned:#{@location}', "#{@key[:problem]}:#{problem}", 'tmp:exclude:#{@location}'
+      $redis.sdiffstore 'tmp:cleaned:#{@location}', "#{@key[:problem]}#{problem}", 'tmp:exclude:#{@location}'
       if $redis.scard('tmp:cleaned:#{@location}') > 0
         $redis.smembers('tmp:cleaned:#{@location}').each do |link|
-          h[problem][link] = $redis.smembers(@key[:link] + ":#{link}")
+          h[problem][link] = $redis.smembers(@key[:link] + link)
         end
       end
     end
@@ -235,7 +235,7 @@ class Sites
     }
     h = {}
     $redis.smembers(opts[mode]).each do |link|
-      a = $redis.smembers @key[:link] + ":#{link}"
+      a = $redis.smembers @key[:link] + link
       # ensure there's an array, instead of nil or 0
       a = [] unless a.kind_of? Array
       h[link] = a
@@ -285,7 +285,7 @@ class Sites
     setpairs.each do |superset, set_prefix|
       keys = $redis.smembers superset
       keys.each do |k|
-        $redis.del set_prefix + ":#{k}"
+        $redis.del set_prefix + k
       end
       $redis.del superset
     end
@@ -302,7 +302,7 @@ class Sites
 
   def purge_orphaned_blacklist_items
     $redis.smembers(@key[:blacklist]).each do |link|
-      i = $redis.scard @key[:link] + ":#{link}"
+      i = $redis.scard @key[:link] + link
       if i == 0
         self.remove_from_blacklist link
       end
