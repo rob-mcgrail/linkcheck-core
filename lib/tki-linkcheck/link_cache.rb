@@ -29,7 +29,7 @@ class LinkCache
   end
 
 
-  def self.flush
+  def self.flush_if_stale
     recency = Time.now - @@time
     if recency > $options.linkcache_time
       self.delete_responses
@@ -38,7 +38,7 @@ class LinkCache
   end
 
 
-  def self.force_flush
+  def self.flush
     self.delete_responses
     $redis.del @@keys[:checked]
   end

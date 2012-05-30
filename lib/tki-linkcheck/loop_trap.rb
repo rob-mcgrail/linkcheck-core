@@ -18,7 +18,7 @@ class LoopTrap
   end
 
 
-  def self.flush
+  def self.reset
     $redis.del "#{$options.global_prefix}:looptrap"
   end
 end

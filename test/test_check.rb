@@ -11,7 +11,7 @@ class TestCheck < MiniTest::Unit::TestCase
     @page.url = URI('http://example.com/')
     @page.doc = Nokogiri::HTML(File.new('./test/mocks/anchors.html'))
     $redis = MockRedis.new
-    LinkCache.force_flush
+    LinkCache.flush
   end
 
 
