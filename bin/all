@@ -1,8 +1,6 @@
 require 'rubygems'
 require './lib/tki-linkcheck'
 
-LinkCache.force_flush
-
 sites = Sites.all
 
 sites.each do |site|
