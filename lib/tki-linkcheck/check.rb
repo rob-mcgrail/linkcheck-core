@@ -58,12 +58,8 @@ class Check
 
 
   def response(uri)
-    if uri.class == URI::HTTPS
-      code = https_request(uri)
-    else
-      code = http_request(uri)
-    end
-    case code
+    response_code = get_response_code(uri)
+    case response_code
     when '200'
       nil
     when '404'
@@ -71,11 +67,11 @@ class Check
     when '403'
       :forbidden
     when '301'
-      local_check :moved_permanently
-    when '302' # Should this be removed?
-      nil
+      ignore_local :moved_permanently
+    when '302'
+      ignore_local nil
     when '303'
-      nil
+      ignore_local nil
     when '503'
       :unavailable
     else
@@ -84,11 +80,21 @@ class Check
   end
 
 
-  def local_check(sym)
+  def ignore_local(sym)
+    # Ignoring redirect responses as noise
     if /(#{Regexp.escape(@page.url.host)})/.match(@link)
       nil
     else
       sym
+    end
+  end
+
+
+  def get_response_code(uri)
+    if uri.class == URI::HTTPS
+      https_request(uri)
+    else
+      http_request(uri)
     end
   end
 
