@@ -17,6 +17,7 @@ end
 group :web do
   gem "sinatra"
   gem "sinatra-flash"
-  gem "puma"
+  gem "mongrel", :platforms => :mri_18
+  gem "puma", :platforms => :mri_19
   gem "haml"
 end

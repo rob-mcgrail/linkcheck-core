@@ -8,5 +8,5 @@ Rake::TestTask.new do |t|
 end
 
 task :server do
-  system("bundle exec rackup -p 8000 -s puma")
+  system("bundle exec rackup -p 8000 -s mongrel")
 end
