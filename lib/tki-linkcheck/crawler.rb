@@ -25,16 +25,14 @@ class Crawler
         @site.log_crawl
         anemone.skip_links_like /%23/, /\.#{STATIC_EXTENSIONS.join('|')}$/
         anemone.on_every_page do |page|
-          puts "Hitting page - #{page.url}"
-          check_links(page) if page.doc
-          @site.log_page page.url
-          LoopTrap.incr
           if LoopTrap.triggered?
             throw :looping
           end
-
+          puts "On page -> #{page.url}"
+          check_links(page) if page.doc
+          @site.log_page page.url
+          LoopTrap.incr
         end
-
       end
     end
 
@@ -56,7 +54,6 @@ class Crawler
 
 
   private
-
 
   def pre_cleanup
     @site.reset_counters
