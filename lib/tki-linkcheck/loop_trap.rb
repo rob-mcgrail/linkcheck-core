@@ -10,7 +10,7 @@ class LoopTrap
 
 
   def self.triggered?
-    if self.count > $options.crawl_limit
+    if self.count >= $options.crawl_limit
       true
     else
       nil
