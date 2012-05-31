@@ -102,12 +102,12 @@ class Sites
     blacklisted = $redis.sismember @key[:blacklist], link
     already_added = $redis.sismember @key[:links], link
     $redis.multi do
-      $redis.sadd @key[:pages], page
-      $redis.sadd @key[:page] + page, link
-      $redis.sadd @key[:links], link
-      $redis.sadd @key[:link] + link, page
+      $redis.sadd @key[:pages], page.to_s
+      $redis.sadd @key[:page] + page.to_s, link.to_s
+      $redis.sadd @key[:links], link.to_s
+      $redis.sadd @key[:link] + link.to_s, page.to_s
       $redis.sadd @key[:problems], problem.to_s
-      $redis.sadd @key[:problem] + problem.to_s, link
+      $redis.sadd @key[:problem] + problem.to_s, link.to_s
     end
     # increment broken count if not blacklisted
     unless blacklisted || already_added
