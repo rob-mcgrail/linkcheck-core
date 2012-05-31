@@ -1,4 +1,4 @@
-REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError, Errno::ECONNREFUSED]
+REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError]
 
 # review these, and do sensible things for the respective errors.
 
@@ -90,7 +90,7 @@ class Check
 
 
   def ignore_local(sym)
-    # Ignoring redirect responses as noise
+    # Ignoring local redirect responses as noise
     if /(#{Regexp.escape(@page.url.host)})/.match(@link)
       nil
     else
@@ -114,6 +114,7 @@ class Check
       code = response.code
     rescue *REQUEST_EXCEPTIONS
       retry_count = (retry_count || 0) + 1
+      sleep ($options.check_delay * retry_count * 2)
       retry unless retry_count >= $options.retry_count
       code = 'failed'
     end
@@ -131,6 +132,7 @@ class Check
       code = response.code
     rescue *REQUEST_EXCEPTIONS
       retry_count = (retry_count || 0) + 1
+      sleep ($options.check_delay * retry_count * 2)
       retry unless retry_count >= $options.retry_count
       code = 'failed'
     end
