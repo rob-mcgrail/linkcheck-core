@@ -1,0 +1,4 @@
+require 'rubygems'
+require './lib/tki-linkcheck'
+
+LinkCache.flush
