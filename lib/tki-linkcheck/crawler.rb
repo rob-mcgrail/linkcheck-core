@@ -25,9 +25,9 @@ class Crawler
         @site.log_crawl
         anemone.skip_links_like /%23/, /\.#{STATIC_EXTENSIONS.join('|')}$/
         anemone.on_every_page do |page|
+          puts "Hitting page - #{page.url}"
           check_links(page) if page.doc
           @site.log_page page.url
-
           LoopTrap.incr
           if LoopTrap.triggered?
             throw :looping
@@ -51,7 +51,6 @@ class Crawler
       if problem
         @site.add_broken page.url, link, problem
       end
-      sleep $options.check_delay
     end
   end
 
