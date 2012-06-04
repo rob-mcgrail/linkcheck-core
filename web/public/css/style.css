@@ -4,6 +4,12 @@
    Author: robert.mcgrail@cwa.co.nz
    ========================================================================== */
 
+h2 small {font-size: 14px;}
+
+h2 {font-size: 18px;}
+
+h3 {font-size: 16px;}
+
 a {
   word-wrap: break-word;
 }
@@ -11,10 +17,6 @@ a {
 .alert {
   margin-top: 5px;
   margin-bottom: 5px;
-}
-
-.flashes {
-  min-height: 60px;
 }
 
 .tabBadge {
@@ -98,7 +100,7 @@ li.link {
 
 .siteListTableHeader {
   color: gray;
-  font-size: 80%;
+  font-size: 100%;
 }
 
 .blacklistBlock {
