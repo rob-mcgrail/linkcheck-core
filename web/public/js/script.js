@@ -16,3 +16,16 @@ $(".targetable").hover(
     $('.' + currentId).addClass("opacitize");
   }
 );
+
+$("form").submit(function(event) {
+  event.preventDefault();
+  var $form = $( this ),
+  site = $form.find( 'input[name="site"]' ).val(),
+  link = $form.find( 'input[name="link"]' ).val(),
+  url = $form.attr( 'action' );
+  id = $form.attr( 'id' );
+  $.post( url, { site: site, link: link });
+  id = id.split('-');
+  id = '.row-' + id[1];
+  $(id).fadeOut();
+});
