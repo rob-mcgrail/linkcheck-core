@@ -103,6 +103,10 @@ post '/purge_orphaned_blacklist_items' do
 end
 
 
+get '/summary_report.csv' do
+  [200, {'Content-Type' => 'text/csv'}, Sites.summary_report]
+end
+
 get '/site/:location/pdf' do
   location = params[:location]
   @pdf_url = pdf("/site/#{location}", "/#{Time.now.to_i}.pdf")
