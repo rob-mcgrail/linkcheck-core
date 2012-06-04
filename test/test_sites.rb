@@ -317,16 +317,14 @@ class TestSite < MiniTest::Unit::TestCase
     $redis.hset "#{$options.global_prefix}:http://another.com", 'location', 'http://another.com'
     $redis.hset "#{$options.global_prefix}:http://another.com", 'last_checked', Time.now.to_i
     csv = Sites.summary_report()
-    puts csv
     assert_equal 2, csv.to_a.length
     # Add an non-recently checked item
     $redis.sadd "#{$options.global_prefix}:sites", 'http://defunct.com'
     $redis.hset "#{$options.global_prefix}:http://defunct.com", 'location', 'http://defunct.com'
     $redis.hset "#{$options.global_prefix}:http://defunct.com", 'last_checked', Time.at(0).to_i
     csv = Sites.summary_report()
-    puts csv
     assert_equal 2, csv.to_a.length
-    assert 'another' =~ csv.to_a[1]
-    refute 'defunct' =~ csv.to_a[1]
+    assert /another/ =~ csv.to_a[1]
+    refute /defunct/ =~ csv.to_a[1]
   end
 end
