@@ -33,7 +33,7 @@ helpers do
     tmpfile = Tempfile.new(['pdf-source', '.html'])
     tmpfile.write(haml :info_broken)
 
-    command = "#{settings.pdf} #{tmpfile.path} - --user-style-sheet #{settings.public_folder}/css/export.css -q"
+    command = "#{settings.pdf} #{tmpfile.path} - --user-style-sheet #{settings.public_folder}/css/pdf.css -q"
 
     pdf, err = Open3.popen3(command) do |stdin, stdout, stderr|
       stdout.binmode
