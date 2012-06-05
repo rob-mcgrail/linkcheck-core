@@ -2,12 +2,14 @@
 - unless @inactive_sites.empty?
     %ul.unstyled
         - @inactive_sites.each do |site|
+            - i += 1
             .inactiveList
                 %li
-                    .span4
-                        %strong
-                            != link_to(site.location, "/site/#{site.location.to_slug}", :class => 'subtleLink')
-                    .span2
-                        %form.littleForm.opacitize.siteManagement{:action => '/sites/manage/activate', :method => 'post', :class => "form-#{i}a floatRight"}
-                            %input{:type => 'hidden', :name => 'site', :value => site.location}
-                            %input.btn.btn-small.btn-success{:type => 'submit', :value => 'Activate'}
+                    .targetable{:id => "row-#{i}a"}
+                        .span4
+                            %strong
+                                != link_to(site.location, "/site/#{site.location.to_slug}", :class => 'subtleLink')
+                        .span2
+                            %form.littleForm.opacitize.siteManagement{:action => '/sites/manage/activate', :method => 'post', :class => "form-#{i}a floatRight"}
+                                %input{:type => 'hidden', :name => 'site', :value => site.location}
+                                %input.btn.btn-small.btn-success{:type => 'submit', :value => 'Activate'}
