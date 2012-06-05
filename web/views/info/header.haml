@@ -1,6 +1,9 @@
 .row
     .span12
-        %h2.siteListHeader 
+        %h2.siteListHeader
             != @site.location
             %small
                 != @site.last_checked.to_time if @site.last_checked
+            %a.btn.pull-right{:href => "/site/#{@site.location.to_slug}/pdf", :style => 'margin-right: 5px;'}
+                %i.icon-download
+                PDF
