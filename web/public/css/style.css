@@ -70,8 +70,21 @@ a {
   padding-bottom: 10px;
 }
 
-.linkTitle {
-  font-size: 100%;
+.targetable {
+  margin-bottom: 35px;
+}
+
+.linkTitle > a {
+  font-size: 110%;
+  font-weight: normal;
+  padding: 4px;
+  color: #333;
+  background-color: #FFC4C4;
+}
+
+.link > a {
+/*  color: #001696;*/
+  text-decoration: underline;
 }
 
 
