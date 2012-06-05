@@ -28,7 +28,12 @@ class Crawler
           if LoopTrap.triggered?
             throw :looping
           end
+
+          $redis.set "#{$options.global_prefix}:status", "#{page.url}"
+          $redis.expire "#{$options.global_prefix}:status", 10
+
           puts "On page -> #{page.url}"
+
           check_links(page) if page.doc
           @site.log_page page.url
           LoopTrap.incr

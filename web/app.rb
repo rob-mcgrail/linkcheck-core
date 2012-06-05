@@ -124,6 +124,16 @@ get '/site/:location/pdf' do
 end
 
 
+get '/check-status' do
+  status = $redis.get("#{$options.global_prefix}:status")
+  if status
+    'Checking ' + status[0..70] + '...'
+  else
+    'Not running'
+  end
+end
+
+
 post '/sites/add' do
   site = Sites.create(:location => params[:location])
   if site.is_a? Sites

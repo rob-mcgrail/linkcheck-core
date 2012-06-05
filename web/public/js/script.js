@@ -17,6 +17,8 @@ $(".targetable").hover(
   }
 );
 
+// Submit forms with class blacklistManagement without page-refresh
+
 $("form.backlistManagement").submit(function(event) {
   event.preventDefault();
   var $form = $( this ),
@@ -28,4 +30,14 @@ $("form.backlistManagement").submit(function(event) {
   id = id.split('-');
   id = '.row-' + id[1];
   $(id).fadeOut();
+});
+
+// updating linkchecker status
+
+$(document).ready(function() {
+ 	 $("#checkStatus").load("/check-status");
+   var refreshId = setInterval(function() {
+      $("#checkStatus").load('/check-status');
+   }, 9000);
+   $.ajaxSetup({ cache: false });
 });
