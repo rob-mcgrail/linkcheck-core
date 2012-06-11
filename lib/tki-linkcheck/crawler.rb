@@ -23,7 +23,8 @@ class Crawler
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
-        anemone.skip_links_like /%23/, /\.#{STATIC_EXTENSIONS.join('|')}$/
+        LinkCache.set_context location
+        anemone.skip_links_like /%23/, /\/index\.php\//, /\.#{STATIC_EXTENSIONS.join('|')}$/
         anemone.on_every_page do |page|
           if LoopTrap.triggered?
             throw :looping
@@ -64,7 +65,6 @@ class Crawler
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
-    LinkCache.flush_if_stale
     LoopTrap.reset
   end
 

@@ -17,13 +17,7 @@ class TestLinkCache < MiniTest::Unit::TestCase
 
   def test_adding_link_to_cache
     LinkCache.add 'http://a.com', nil
-    assert LinkCache.checked? 'http://a.com'
-  end
-
-
-  def test_non_urls_ignored
-    LinkCache.add 'abc', nil
-    refute LinkCache.checked? 'abc'
+    assert LinkCache.get 'http://a.com'
   end
 
 

@@ -4,37 +4,37 @@ class LinkCache
     :response => "#{$options.global_prefix}:response:"
   }
   @@time = Time.now
+  @@context = nil
 
-  def self.checked?(link)
-    $redis.sismember @@keys[:checked], link
+#  def self.checked?(link)
+#    $redis.sismember @@keys[:checked], link
+#  end
+
+  def self.set_context(location)
+    @@context = location
   end
-
 
   def self.get(link)
     response = $redis.get @@keys[:response] + link
-    if response == "" || nil
-      nil
+  end
+
+
+  def self.add(link, code) # set expiry based on location...
+    $redis.set @@keys[:response] + link, code
+    if /^#{Regexp.escape(@@context.to_s)}/.match(link)
+      $redis.expire @@keys[:response] + link, $options.long_expiry
     else
-      response.to_sym if response
+      $redis.expire @@keys[:response] + link, $options.short_expiry
     end
   end
 
 
-  def self.add(link, code)
-    if link =~ /^http|^https/
-      @@time = Time.now
-      $redis.sadd @@keys[:checked], link
-      $redis.set @@keys[:response] + link, code
-    end
-  end
-
-
-  def self.flush_if_stale
-    recency = Time.now - @@time
-    if recency > $options.linkcache_time
-      self.flush
-    end
-  end
+#  def self.flush_if_stale
+#    recency = Time.now - @@time
+#    if recency > $options.linkcache_time
+#      self.flush
+#    end
+#  end
 
 
   def self.flush
