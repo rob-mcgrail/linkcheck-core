@@ -1,7 +1,6 @@
 STATIC_EXTENSIONS = %w(flv swf png jpg gif asx zip rar tar 7z gz jar js css dtd xsd ico raw mp3 mp4 wav wmv ape aac ac3 wma aiff mpg mpeg avi mov ogg mkv mka asx asf mp2 m1v m3u f4v pdf doc docx xls ppt pps bin exe rss xml)
 
 class Crawler
-
   def initialize(site)
     @site = site
   end
@@ -30,9 +29,7 @@ class Crawler
             throw :looping
           end
 
-          $redis.set "#{$options.global_prefix}:status", "#{page.url}"
-          $redis.expire "#{$options.global_prefix}:status", 10
-
+          Status.set page.url
           puts "On page -> #{page.url}"
 
           check_links(page) if page.doc
@@ -70,8 +67,6 @@ class Crawler
 
 
   def post_cleanup
-    # Until we know that this can reliably run its course
-    # keep all important jobs in pre_cleanup, in case post_\
-    # never gets a chance to run...
+    Status.clear
   end
 end
