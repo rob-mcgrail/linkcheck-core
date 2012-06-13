@@ -30,7 +30,7 @@ class Crawler
           end
 
           $redis.set "#{$options.global_prefix}:status", "#{page.url}"
-          $redis.expire "#{$options.global_prefix}:status", 30
+          $redis.expire "#{$options.global_prefix}:status", 120 # kills the key in event of bad shutdown
 
           puts "On page -> #{page.url}"
 
@@ -70,6 +70,7 @@ class Crawler
 
 
   def post_cleanup
+    $redis.del "#{$options.global_prefix}:status", "#{page.url}"
     # Until we know that this can reliably run its course
     # keep all important jobs in pre_cleanup, in case post_\
     # never gets a chance to run...
