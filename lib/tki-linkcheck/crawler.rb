@@ -29,9 +29,7 @@ class Crawler
             throw :looping
           end
 
-          $redis.set "#{$options.global_prefix}:status", "#{page.url}"
-          $redis.expire "#{$options.global_prefix}:status", 120 # kills the key in event of bad shutdown
-
+          Status.set page.url
           puts "On page -> #{page.url}"
 
           check_links(page) if page.doc
@@ -70,9 +68,6 @@ class Crawler
 
 
   def post_cleanup
-    $redis.del "#{$options.global_prefix}:status", "#{page.url}"
-    # Until we know that this can reliably run its course
-    # keep all important jobs in pre_cleanup, in case post_\
-    # never gets a chance to run...
+    Status.clear
   end
 end
