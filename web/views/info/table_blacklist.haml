@@ -2,24 +2,24 @@
 - @links.each do |link, pages|
     - i += 1
     .blacklistBlock{:class => "row-#{i}"}
-        .row
-            .targetable{:id => "row-#{i}"}
+        .targetable{:id => "row-#{i}"}
+            .row
                 .span11
                     != link_to(link, link)
                 .span1
                     != haml :'info/un_blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
 
-        - unless pages.empty?
+            - unless pages.empty?
 
-            .row
-                .span12
-                    %a{:class => 'accordion-toggle subtleLink', :data => {:toggle => 'collapse', :target => "#table-#{i}"}}
-                        - s = "Appears on #{pages.length} page"
-                        != pages.length == 1 ? s : s.plural
-            .row
-                .collapse{:id => "table-#{i}"}
-                    %ul.unstyled
-                        - pages.each do |page|
-                            .span12
-                                %li.link
-                                    != link_to(page, page, :class => 'subtleLink indentLink')
+                .row
+                    .span12
+                        %a{:class => 'accordion-toggle subtleLink', :data => {:toggle => 'collapse', :target => "#table-#{i}"}}
+                            - s = "Appears on #{pages.length} page"
+                            != pages.length == 1 ? s : s.plural
+                .row
+                    .collapse{:id => "table-#{i}"}
+                        %ul.unstyled
+                            - pages.each do |page|
+                                .span12
+                                    %li.link
+                                        != link_to(page, page, :class => 'subtleLink indentLink')
