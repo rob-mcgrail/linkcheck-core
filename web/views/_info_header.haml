@@ -1,0 +1,6 @@
+.row
+    .span12
+        %h2.siteListHeader 
+            != @site.location
+            %small
+                != @site.last_checked.to_time if @site.last_checked
