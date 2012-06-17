@@ -63,6 +63,9 @@ class TestCheck < MiniTest::Unit::TestCase
   
   def test_invalid_uris_return_correct_symbol
     assert_equal :invalid, Check.validate(@doc, 'example/page')  
-    assert_equal :invalid, Check.validate(@doc, 'http:// example.com')    
+    assert_equal :invalid, Check.validate(@doc, 'http:// example.com')
+    assert_equal :invalid, Check.validate(@doc, '$')
+    assert_equal :invalid, Check.validate(@doc, '')
+    assert_equal :invalid, Check.validate(@doc, 'git://example.com')     
   end
 end
