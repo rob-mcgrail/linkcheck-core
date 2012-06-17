@@ -195,7 +195,6 @@ class Sites
     unless $redis.sismember(@key[:blacklist], link)
       $redis.sadd @key[:blacklist], link
       $redis.decr @key[:broken_count]
-      adjust_broken_pages_count_by_blacklist(link, :adding)
     end
   end
 
