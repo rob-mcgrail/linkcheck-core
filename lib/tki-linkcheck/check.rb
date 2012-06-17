@@ -26,7 +26,7 @@ class Check
   def self.validate_link(link)
     if link =~ URI::regexp($options.valid_schemes)
       uri = URI.parse(link)
-      if $options.checked_schemes.member? uri.class
+      if $options.checked_classes.member? uri.class
         response = Net::HTTP.get_response(uri)
         case response.code
         when '404'
