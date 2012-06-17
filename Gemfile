@@ -1,5 +1,6 @@
 source :rubygems
 
+gem "rake"
 gem "anemone"
 gem "redis"
 gem "SystemTimer", :platforms => :mri_18
@@ -16,9 +17,6 @@ end
 group :web do
   gem "sinatra"
   gem "sinatra-flash"
-  gem "mongrel"
+  gem "puma"
   gem "haml"
-  gem "RedCloth"
-  gem "warden"
-  gem "bcrypt-ruby"
 end
