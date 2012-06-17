@@ -77,7 +77,7 @@ class Check
 
 
   def local_check(sym)
-    if @page.url.host =~ @link
+    if @page.url.host =~ /Regexp.escape(@link)/
       nil
     else
       sym
