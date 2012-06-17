@@ -18,6 +18,7 @@ class Sites
 
   def self.all
     keys = $redis.smembers "#{$options.global_prefix}:sites"
+    keys.sort! { |a,b| a <=> b }
     sites = []
     keys.each do |site|
       sites << self.get(site)
