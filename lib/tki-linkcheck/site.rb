@@ -94,69 +94,6 @@ class Sites
   end
 
 
-  def links_by_problem_by_page
-    # returns {'page' => {'problem' => ['link', 'link']}}
-    h = {}
-    # get pages for the site
-    $redis.smembers(@key[:pages]).each do |page|
-      # flush tmp keys
-      $redis.del 'tmp:exclude', 'tmp:cleaned'
-      # get combined blacklist
-      $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
-      # store links not in blacklist
-      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
-      if $redis.scard('tmp:cleaned') > 0
-        h[page] = {}
-        problems = $redis.smembers(@key[:problems])
-        problems.each do |problem|
-          # for each problem type, store links also in that set
-          h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
-        end
-      end
-    end
-    h
-  end
-
-
-  def pages_by_link_by_problem
-    # returns {'problem' => {'link' => ['page', 'page']}}
-    h = {}
-    # get problems for the site
-    $redis.smembers(@key[:problems]).each do |problem|
-      h[problem] = {}
-      # flush tmp keys
-      $redis.del 'tmp:exclude:#{@location}', 'tmp:cleaned:#{@location}'
-      # get combined blacklist
-      $redis.sunionstore 'tmp:exclude:#{@location}', @key[:blacklist], @key[:temp_blacklist]
-      # store links not in blacklist
-      $redis.sdiffstore 'tmp:cleaned:#{@location}', "#{@key[:problem]}:#{problem}", 'tmp:exclude:#{@location}'
-      if $redis.scard('tmp:cleaned:#{@location}') > 0
-        $redis.smembers('tmp:cleaned:#{@location}').each do |link|
-          h[problem][link] = $redis.smembers(@key[:link] + ":#{link}")
-        end
-      end
-    end
-    h
-  end
-
-
-  def pages_by_blacklisted_link(mode = :permanent)
-     # returns {'link' => ['page', 'page']}
-    opts = {
-      :permanent => @key[:blacklist],
-      :temp => @key[:temp_blacklist]
-    }
-    h = {}
-    $redis.smembers(opts[mode]).each do |link|
-      a = $redis.smembers @key[:link] + ":#{link}"
-      # ensure there's an array, instead of nil or 0
-      a = [] unless a.kind_of? Array
-      h[link] = a
-    end
-    h
-  end
-
-
   def add_broken(page, link, problem)
     blacklisted = $redis.sismember @key[:blacklist], link
     already_added = $redis.sismember @key[:links], link
@@ -244,6 +181,69 @@ class Sites
   end
 
 
+  def links_by_problem_by_page
+    # returns {'page' => {'problem' => ['link', 'link']}}
+    h = {}
+    # get pages for the site
+    $redis.smembers(@key[:pages]).each do |page|
+      # flush tmp keys
+      $redis.del 'tmp:exclude', 'tmp:cleaned'
+      # get combined blacklist
+      $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
+      # store links not in blacklist
+      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
+      if $redis.scard('tmp:cleaned') > 0
+        h[page] = {}
+        problems = $redis.smembers(@key[:problems])
+        problems.each do |problem|
+          # for each problem type, store links also in that set
+          h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
+        end
+      end
+    end
+    h
+  end
+
+
+  def pages_by_link_by_problem
+    # returns {'problem' => {'link' => ['page', 'page']}}
+    h = {}
+    # get problems for the site
+    $redis.smembers(@key[:problems]).each do |problem|
+      h[problem] = {}
+      # flush tmp keys
+      $redis.del 'tmp:exclude:#{@location}', 'tmp:cleaned:#{@location}'
+      # get combined blacklist
+      $redis.sunionstore 'tmp:exclude:#{@location}', @key[:blacklist], @key[:temp_blacklist]
+      # store links not in blacklist
+      $redis.sdiffstore 'tmp:cleaned:#{@location}', "#{@key[:problem]}:#{problem}", 'tmp:exclude:#{@location}'
+      if $redis.scard('tmp:cleaned:#{@location}') > 0
+        $redis.smembers('tmp:cleaned:#{@location}').each do |link|
+          h[problem][link] = $redis.smembers(@key[:link] + ":#{link}")
+        end
+      end
+    end
+    h
+  end
+
+
+  def pages_by_blacklisted_link(mode = :permanent)
+     # returns {'link' => ['page', 'page']}
+    opts = {
+      :permanent => @key[:blacklist],
+      :temp => @key[:temp_blacklist]
+    }
+    h = {}
+    $redis.smembers(opts[mode]).each do |link|
+      a = $redis.smembers @key[:link] + ":#{link}"
+      # ensure there's an array, instead of nil or 0
+      a = [] unless a.kind_of? Array
+      h[link] = a
+    end
+    h
+  end
+
+
   def broken_links_count
     s = $redis.get @key[:broken_count]
     if s
@@ -287,19 +287,6 @@ class Sites
 
 
   private
-
-  def adjust_broken_pages_count_by_blacklist(link, context = :adding)
-    # make combined blacklist
-    $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
-    # get pages containing this link
-    $redis.smembers(@key[:link] + ":#{link}").each do |page|
-      # store non-blacklist links for pages
-      $redis.sdiffstore 'tmp:remainder', @key[:page] + ":#{page}", 'tmp:exclude'
-      i = $redis.scard('tmp:remainder')
-      $redis.del 'tmp:remainder'
-    end
-    $redis.del 'tmp:exclude'
-  end
 
 
   def flush_sets(setpairs)
