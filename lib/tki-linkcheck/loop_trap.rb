@@ -5,7 +5,7 @@ class LoopTrap
 
 
   def self.count
-    $redis.get "#{$options.global_prefix}:looptrap"
+    $redis.get("#{$options.global_prefix}:looptrap").to_i
   end
 
 
