@@ -6,6 +6,7 @@ configure do
   set :sessions, true
   set :logging, false # stops annoying double log messages.
   set :static, false # see config.ru for dev mode static file serving
+  set :pdf, '/usr/bin/wkhtmltopdf'
 end
 
 configure :development do
@@ -32,7 +33,7 @@ helpers do
 
   def pdf(page, destination)
     location = params[:location]
-    str = "#{options.pdf} #{request.host}:#{request.port}#{page} #{settings.public_folder}/pdf#{destination}"
+    str = "#{settings.pdf} #{request.host}:#{request.port}#{page} #{settings.public_folder}/pdf#{destination}"
     system str
     "/pdf#{destination}"
   end
@@ -98,7 +99,7 @@ end
 
 get '/report/:location' do
   location = params[:location]
-  @pdf_url = pdf "/site/#{location}", "/testing.pdf"
+  @pdf_url = pdf("/site/#{location}", "/testing.pdf")
   redirect @pdf_url
 end
 
