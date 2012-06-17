@@ -119,6 +119,28 @@ class Sites
   end
 
 
+  def pages_by_link_by_problem
+    # returns {'problem' => {'link' => ['page', 'page']}}
+    h = {}
+    # get problems for the site
+    $redis.smembers(@key[:problems]).each do |problem|
+      h[problem] = {}
+      # flush tmp keys
+      $redis.del 'tmp:exclude:#{@location}', 'tmp:cleaned:#{@location}'
+      # get combined blacklist
+      $redis.sunionstore 'tmp:exclude:#{@location}', @key[:blacklist], @key[:temp_blacklist]
+      # store links not in blacklist
+      $redis.sdiffstore 'tmp:cleaned:#{@location}', "#{@key[:problem]}:#{problem}", 'tmp:exclude:#{@location}'
+      if $redis.scard('tmp:cleaned:#{@location}') > 0
+        $redis.smembers('tmp:cleaned:#{@location}').each do |link|
+          h[problem][link] = $redis.smembers(@key[:link] + ":#{link}")
+        end
+      end
+    end
+    h
+  end
+
+
   def pages_by_blacklisted_link(mode = :permanent)
      # returns {'link' => ['page', 'page']}
     opts = {
