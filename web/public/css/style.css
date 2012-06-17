@@ -68,6 +68,11 @@ a {
   padding-bottom: 10px;
 }
 
+.linkTitle {
+  font-size: 100%;
+  padding-bottom: 10px;
+}
+
 .goLeft {
   text-align: left;
 }
