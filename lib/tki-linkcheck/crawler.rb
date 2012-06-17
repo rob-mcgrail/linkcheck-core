@@ -90,8 +90,9 @@ class Crawler
     a.uniq!
     a.delete_if do |link|
       outcome = nil
-      $options.permanently_ignore.each do |match|
-        outcome = link =~ match
+      $options.permanently_ignore.each do |pattern|
+        match = pattern.match(link)
+        outcome = true if match
       end
       outcome
     end
