@@ -33,7 +33,7 @@ class Crawler
       unless LinkCache.passed? link
         check = Check.new
         problem = check.validate(page, link)
-        puts problem
+        puts problem # remove
         if problem
           @site.add_broken page.url, link, problem
         end
