@@ -2,7 +2,7 @@ Dir['./web/modules/*.rb'].each {|file| require file }
 
 configure do
   set :root, File.dirname(__FILE__)
-  set :lock, true
+#  set :lock, true
   set :sessions, true
   set :logging, false # stops annoying double log messages.
   set :static, false # see config.ru for dev mode static file serving
@@ -87,6 +87,16 @@ get '/sites/add' do
   title 'add'
   haml :add
 end
+
+
+get '/report/:location' do
+  location = params[:location]
+  str = "/usr/bin/wkhtmltopdf #{request.host}:#{request.port}/site/#{location} #{settings.public_folder}/pdf/#{params[:location]}.pdf"
+  puts str
+  system(str)
+  "<a href=\"/pdf/#{params[:location]}.pdf\">PDF</a>"
+end
+
 
 
 post '/ajax/count/pages' do
