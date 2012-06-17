@@ -10,6 +10,15 @@ class Sites
   end
   
   
+  def self.all
+    sites = $redis.smembers "#{$options.global_prefix}:sites"
+    a = []
+    sites.each do |site|
+      a << self.get(site)
+    end
+  end
+  
+  
   def self.get(location)
     if $redis.sismember "#{$options.global_prefix}:sites", location
       self.new(location)
