@@ -25,6 +25,7 @@ end
 
 helpers do
   def pdf(location, destination)
+    require 'open3'
     @context = :pages
     @site = Sites.get(location)
     @problems = @site.pages_by_link_by_problem
@@ -32,10 +33,13 @@ helpers do
     tmpfile = Tempfile.new(['pdf-source', '.html'])
     tmpfile.write(haml :info_broken)
 
-    str = "#{settings.pdf} #{tmpfile.path} #{settings.public_folder}/pdf#{destination} --user-style-sheet #{settings.public_folder}/css/export.css"
+    command = "#{settings.pdf} #{tmpfile.path} - --user-style-sheet #{settings.public_folder}/css/export.css -q"
 
-    system str
-    "/pdf#{destination}"
+    pdf, err = Open3.popen3(command) do |stdin, stdout, stderr|
+      stdout.binmode
+      stderr.binmode
+      [stdout.read, stderr.read]
+    end
   end
 end
 
@@ -115,8 +119,8 @@ end
 
 get '/site/:location/pdf' do
   location = params[:location].from_slug
-  @pdf_url = pdf(location, "/#{Time.now.to_i}.pdf")
-  redirect @pdf_url
+  @pdf = pdf(location, "/#{Time.now.to_i}.pdf")
+  [200, {'Content-Type' => 'application/pdf'}, @pdf]
 end
 
 
