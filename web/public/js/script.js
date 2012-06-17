@@ -1,5 +1,5 @@
 var currentId = '';
-$(".pageInfo").hover(
+$(".targetable").hover(
   function () {
     currentId = $(this).attr('id');
     currentId = currentId.replace('row', 'form');

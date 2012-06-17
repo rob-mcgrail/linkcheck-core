@@ -3,13 +3,13 @@
     %ul.unstyled
         - @inactive_sites.each do |site|
             - i += 1
-            .activeList
+            .inactiveList
                 %li
-                    .pageInfo{:id => "row-#{i}a"}
+                    .targetable{:id => "row-#{i}a"}
                         .span4
                             %h3
-                                != link_to(site.location, "/site/#{site.location.to_slug}")
-                        .span1
-                            %form.littleForm.opacitize{:action => '/sites/manage/activate', :method => 'post', :class => "form-#{i}a"}
+                                != link_to(site.location, "/site/#{site.location.to_slug}", :class => 'subtleLink')
+                        .span2
+                            %form.littleForm.opacitize{:action => '/sites/manage/activate', :method => 'post', :class => "form-#{i}a floatRight"}
                                 %input{:type => 'hidden', :name => 'site', :value => site.location}
                                 %input.btn.btn-small.btn-success{:type => 'submit', :value => 'Activate'}

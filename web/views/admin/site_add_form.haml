@@ -1,0 +1,17 @@
+.modal-header
+    %h2
+        %a{:class => 'close', :data => {:dismiss => 'modal'}} x
+        Add new site
+.modal-body
+    %form#siteAddForm{:action => '/sites/add', :method => 'post'}
+        %p.alert.alert-info
+            The site will be immediately active, and will be crawled automatically at the usual time.
+        .siteFormArea
+            %label
+                %strong
+                    Site location
+            %input{:type => 'text', :name => 'location', :class => 'span3', :placeholder => 'http://somesite.com'}
+        .modal-footer
+            %a{:class => 'btn', :data => {:dismiss => 'modal'}} Cancel
+            %button{:type => 'submit', :class => 'btn btn-primary'}
+                Submit

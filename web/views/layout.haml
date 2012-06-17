@@ -6,31 +6,31 @@
         %title= @title || ''
         %meta{:content => "width=device-width", :name => "viewport"}
         %link{:href => '/img/favicon.ico', :type => 'image/x-icon', :rel => "shortcut icon"}
-        
+
         - if settings.development?
             %link{:href => "/less/style.less", :rel => "stylesheet/less"}
             %script{:src => "/js/libs/less-1.2.1.min.js"}
-            
+
         - if settings.production?
             != stylesheet_link_tag "/css/core.css"
-        
+
         != stylesheet_link_tag "/css/style.css"
-        
+
         /[if lt IE 9]
             %script{:src => '//html5shiv.googlecode.com/svn/trunk/html5.js'}
-            %script window.html5 || document.write('<script src="/js/libs/html5.js"><\/script>')      
+            %script window.html5 || document.write('<script src="/js/libs/html5.js"><\/script>')
 
     %body
         .container
             .header
                 != haml :header
             / /header
-            
+
             -# Alerts via flash[:success] = 'RON PAUL'
             .flashes
-                != haml :flashes        
+                != haml :flashes
             / /flashes
-            
+
             -# Views via :haml :'things/table'
             .content
                 != yield if block_given?
@@ -39,32 +39,31 @@
             %footer
                 != haml :footer
             / /footer
-            
+
         / /container
-        
+
         %script{:src => "//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
         :javascript
-            window.jQuery || document.write('<script src="/js/libs/jquery-1.7.1.min.js"><\/script>')    
-                
+            window.jQuery || document.write('<script src="/js/libs/jquery-1.7.1.min.js"><\/script>')
+
         -# Remove bootstrap scripts as required
-        -# != javascript_script_tag "js/libs/bootstrap/transition.js"
+        != javascript_script_tag "js/libs/bootstrap/transition.js"
         != javascript_script_tag "js/libs/bootstrap/alert.js"
-        -# != javascript_script_tag "js/libs/bootstrap/modal.js"
+        != javascript_script_tag "js/libs/bootstrap/modal.js"
         != javascript_script_tag "js/libs/bootstrap/dropdown.js"
         -# != javascript_script_tag "js/libs/bootstrap/scrollspy.js"
         != javascript_script_tag "js/libs/bootstrap/tab.js"
-        != javascript_script_tag "js/libs/bootstrap/tooltip.js"
-        != javascript_script_tag "js/libs/bootstrap/popover.js"
+        -# != javascript_script_tag "js/libs/bootstrap/tooltip.js"
+        -# != javascript_script_tag "js/libs/bootstrap/popover.js"
         != javascript_script_tag "js/libs/bootstrap/button.js"
         != javascript_script_tag "js/libs/bootstrap/collapse.js"
         -# != javascript_script_tag "js/libs/bootstrap/carousel.js"
         -# != javascript_script_tag "js/libs/bootstrap/typeahead.js"
-        != javascript_script_tag "/js/script.js" 
-        
+        != javascript_script_tag "/js/script.js"
+
         -#
             :javascript
                 var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
                 (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
                 g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
                 s.parentNode.insertBefore(g,s)}(document,'script'));
-            

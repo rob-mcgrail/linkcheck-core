@@ -28,7 +28,7 @@ helpers do
       time < age
     end
   end
-  
+
   def tab_cardinalities(site)
     h = {}
     h[:pages] = site.pages_with_brokens_count
@@ -36,7 +36,7 @@ helpers do
     h[:temp_blacklist] = site.temp_blacklist_count
     h
   end
-end 
+end
 
 
 get '/?' do
@@ -50,6 +50,7 @@ end
 
 get '/site/:location/?' do
   location = params[:location].from_slug
+  title location
   @context = :pages
   @site = Sites.get(location)
   @pages = @site.links_by_problem_by_page
@@ -60,6 +61,7 @@ end
 
 get '/site/:location/blacklist/?' do
   location = params[:location].from_slug
+  title location
   @context = :blacklist
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_link(:permanent)
@@ -70,6 +72,7 @@ end
 
 get '/site/:location/blacklist/temp/?' do
   location = params[:location].from_slug
+  title location
   @context = :temp_blacklist
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_link(:temp)
@@ -79,10 +82,29 @@ end
 
 
 get '/sites/manage/?' do
+   title 'manage sites'
    @sites = Sites.all
    @inactive_sites = Sites.inactive
    @admin = true
    haml :admin
+end
+
+
+get '/sites/add' do
+  title 'add'
+  haml :add
+end
+
+
+post '/sites/add' do
+  site = Sites.create(:location => params[:location])
+  if site.is_a? Sites
+    flash[:success] = "You have created a new site <strong>#{site.location}</strong>"
+    redirect '/sites/manage'
+  else
+    flash[:error] = "There was a problem creating the new site."
+    redirect '/sites/manage'
+  end
 end
 
 
@@ -128,4 +150,3 @@ post '/blacklist/temp/remove?' do
   Sites.get(location).remove_from_temp_blacklist link
   redirect "/site/#{location.to_slug}/blacklist/temp"
 end
-

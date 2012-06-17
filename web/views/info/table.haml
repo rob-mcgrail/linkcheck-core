@@ -1,7 +1,7 @@
-- i = 0               
+- i = 0
 - @pages.each do |page, hash_of_problems|
     .row
-        .span12 
+        .span12
             %h3.pageTitle
                 != link_to(page, page, :class => 'subtleLink')
             %hr.thin
@@ -11,13 +11,13 @@
                 .span12
                     %h4.problemLabel
                         != problem.gsub('_', ' ').proper_case
-           
+
             .row
                 %ul.unstyled
                     - array.each do |link|
                         - i += 1
-                        
-                        .pageInfo{:id => "row-#{i}"}
+
+                        .targetable{:id => "row-#{i}"}
                             .span8
                                 %li.link
                                     != link_to(link, link)

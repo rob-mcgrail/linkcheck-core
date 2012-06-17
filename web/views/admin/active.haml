@@ -5,11 +5,11 @@
             - i += 1
             .activeList
                 %li
-                    .pageInfo{:id => "row-#{i}d"}
+                    .targetable{:id => "row-#{i}d"}
                         .span4
                             %h3
-                                != link_to(site.location, "/site/#{site.location.to_slug}")
-                        .span1
-                            %form.littleForm.opacitize{:action => '/sites/manage/deactivate', :method => 'post', :class => "form-#{i}d"}
+                                != link_to(site.location, "/site/#{site.location.to_slug}", :class => 'subtleLink')
+                        .span2
+                            %form.littleForm.opacitize{:action => '/sites/manage/deactivate', :method => 'post', :class => "form-#{i}d floatRight"}
                                 %input{:type => 'hidden', :name => 'site', :value => site.location}
                                 %input.btn.btn-small.btn-warning{:type => 'submit', :value => 'Deactivate'}
