@@ -165,30 +165,38 @@ class Sites
 
 
   def blacklist(link)
-    $redis.sadd @key[:blacklist], link
-    $redis.decr @key[:broken_count]
-    adjust_broken_pages_count_by_blacklist(link, :adding)
+    unless $redis.sismember(@key[:blacklist], link)
+      $redis.sadd @key[:blacklist], link
+      $redis.decr @key[:broken_count]
+      adjust_broken_pages_count_by_blacklist(link, :adding)
+    end
   end
 
 
   def temp_blacklist(link)
-    $redis.sadd @key[:temp_blacklist], link
-    $redis.decr @key[:broken_count]
-    adjust_broken_pages_count_by_blacklist(link, :adding)
+    unless $redis.sismember(@key[:temp_blacklist], link)
+      $redis.sadd @key[:temp_blacklist], link
+      $redis.decr @key[:broken_count]
+      adjust_broken_pages_count_by_blacklist(link, :adding)
+    end
   end
 
 
   def remove_from_blacklist(link)
-    $redis.srem @key[:blacklist], link
-    $redis.incr @key[:broken_count]
-    adjust_broken_pages_count_by_blacklist(link, :removing)
+    if $redis.sismember(@key[:blacklist], link)
+      $redis.srem @key[:blacklist], link
+      $redis.incr @key[:broken_count]
+      adjust_broken_pages_count_by_blacklist(link, :removing)
+    end
   end
 
 
   def remove_from_temp_blacklist(link)
-    $redis.srem @key[:temp_blacklist], link
-    $redis.incr @key[:broken_count]
-    adjust_broken_pages_count_by_blacklist(link, :removing)
+    if $redis.sismember(@key[:temp_blacklist], link)
+      $redis.srem @key[:temp_blacklist], link
+      $redis.incr @key[:broken_count]
+      adjust_broken_pages_count_by_blacklist(link, :removing)
+    end
   end
 
 
