@@ -33,14 +33,18 @@ class Sites
 
 
   def self.deactivate(location)
-    $redis.srem "#{$options.global_prefix}:sites", location
-    $redis.sadd "#{$options.global_prefix}:inactive:sites", location
+    $redis.multi do
+      $redis.srem "#{$options.global_prefix}:sites", location
+      $redis.sadd "#{$options.global_prefix}:inactive:sites", location
+    end
   end
 
 
   def self.activate(location)
-    $redis.srem "#{$options.global_prefix}:inactive:sites", location
-    $redis.sadd "#{$options.global_prefix}:sites", location
+    $redis.multi do
+      $redis.srem "#{$options.global_prefix}:inactive:sites", location
+      $redis.sadd "#{$options.global_prefix}:sites", location
+    end
   end
 
 
