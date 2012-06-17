@@ -1,5 +1,4 @@
 class Crawler
-
   def initialize(site)
     @site = site
   end
@@ -8,7 +7,7 @@ class Crawler
   def crawl
     LinkCache.flush # I don't belong here...
     pre_cleanup
-    Anemone.crawl(@site.address) do |anemone|
+    Anemone.crawl(@site.location) do |anemone|
       anemone.on_every_page do |page|
         check_links(page) if page.doc
         @site.log_page page.url
@@ -41,8 +40,8 @@ class Crawler
     a.delete_if {|link| link =~ /^mailto:/} #remove mailto
     a.map! do |link|
       if link !~ /^[a-z]+:\/\// #doesn't start with a protocol
-        address = "http://#{page.url.host}/"
-        link = address + link.gsub(/^\//,'') # make absolute
+        location = "http://#{page.url.host}/"
+        link = location + link.gsub(/^\//,'') # make absolute
       else
         link
       end
