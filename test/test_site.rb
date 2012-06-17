@@ -59,6 +59,8 @@ class TestSite < MiniTest::Unit::TestCase
     @site.add_broken('http://example.com/a', 'http://a.com', 'problem1')
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:pages"), 'http://example.com/a'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:page:http://example.com/a"), 'http://a.com'
+    assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:links"), 'http://a.com'
+    assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:link:http://a.com"), 'http://example.com/a'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:problems"), 'problem1'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:problem:problem1"), 'http://a.com'
   end
@@ -176,11 +178,15 @@ class TestSite < MiniTest::Unit::TestCase
     @site.log_page 'http://example.com/a'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:pages"), 'http://example.com/a'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:page:http://example.com/a"), 'http://a.com'
+    assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:links"), 'http://a.com'
+    assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:link:http://a.com"), 'http://example.com/a'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:problems"), 'problem1'
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:problem:problem1"), 'http://a.com'
     @site.flush_issues
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:pages")
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:page:http://example.com/a")
+    assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:links")
+    assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:link:http://a.com")
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:problems")
     assert_empty $redis.smembers("#{$options.global_prefix}:#{@site.location}:problem:problem1")
   end
