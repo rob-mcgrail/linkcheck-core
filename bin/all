@@ -1,0 +1,8 @@
+require 'rubygems'
+require './lib/tki-linkcheck'
+
+sites = Sites.all
+
+sites.each do |site|
+  Crawler.new(site).crawl
+end

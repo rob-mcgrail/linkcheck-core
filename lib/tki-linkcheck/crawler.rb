@@ -2,8 +2,8 @@ class Crawler
   def initialize(site)
     @site = site
   end
-  
-  
+
+
   def crawl
     LinkCache.flush # only cleared if not recently used
     pre_cleanup
@@ -16,10 +16,10 @@ class Crawler
     end
     post_cleanup
   end
-  
-  
+
+
   private
-  
+
   def check_links(page)
     links = extract_links(page)
     links.each do |link|
@@ -34,14 +34,15 @@ class Crawler
       end
     end
   end
-  
-  
+
+
   def extract_links(page)
     a = page.doc.css('a')
     a = a.map {|link| link.attribute('href').to_s}
     a.uniq!
     a.delete_if {|link| link =~ /^mailto:/} #remove mailto
     a.map! do |link|
+      link.gsub!(' ', '%20')
       if link !~ /^[a-z]+:\/\// #doesn't start with a protocol
         location = "http://#{page.url.host}/"
         link = location + link.gsub(/^\//,'') # make absolute
@@ -51,15 +52,15 @@ class Crawler
     end
     a
   end
-  
-  
+
+
   def pre_cleanup
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
   end
-  
-  
+
+
   def post_cleanup
   end
 end
