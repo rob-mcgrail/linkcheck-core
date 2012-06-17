@@ -1,6 +1,6 @@
 class LinkCache
   @@keys = {
-    :checked => "#{$options.global_prefix}:checked",
+    :checked => "#{$options.global_prefix}:cached",
     :response => "#{$options.global_prefix}:response:"
   }
   @@time = Time.now
