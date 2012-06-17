@@ -3,8 +3,7 @@ Dir['./web/modules/*.rb'].each {|file| require file }
 configure do
   set :root, File.dirname(__FILE__)
   set :lock, true
-  set :method_override, true # For HTTP verbs
-  set :sessions, false
+  set :sessions, true
   set :logging, false # stops annoying double log messages.
   set :static, false # see config.ru for dev mode static file serving
 end
@@ -43,7 +42,6 @@ end
 get '/?' do
   title 'sites'
   partition = partition_by_age(Sites.all)
-  puts partition[0].first.location
   @recent = partition[0]
   @old = partition[1]
   haml :sites
@@ -60,7 +58,7 @@ get '/site/:location/?' do
 end
 
 
-get '/site/:location/blacklist?' do
+get '/site/:location/blacklist/?' do
   location = params[:location].from_slug
   @context = :blacklist
   @site = Sites.get(location)
@@ -70,13 +68,33 @@ get '/site/:location/blacklist?' do
 end
 
 
-get '/site/:location/blacklist/temp?' do
+get '/site/:location/blacklist/temp/?' do
   location = params[:location].from_slug
   @context = :temp_blacklist
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_link(:temp)
   @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
+end
+
+
+get '/sites/manage/?' do
+   @sites = Sites.all
+   @inactive_sites = Sites.inactive
+   @admin = true
+   haml :admin
+end
+
+
+post '/sites/manage/deactivate/?' do
+   Sites.deactivate(params[:site])
+   redirect '/sites/manage'
+end
+
+
+post '/sites/manage/activate/?' do
+   Sites.activate(params[:site])
+   redirect '/sites/manage'
 end
 
 

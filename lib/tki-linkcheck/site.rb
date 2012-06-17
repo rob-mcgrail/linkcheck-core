@@ -25,11 +25,33 @@ class Sites
   
   
   def self.get(location)
-    if $redis.sismember "#{$options.global_prefix}:sites", location
-      self.new(location)
-    end
+    self.new(location)
   end
   
+  
+  def self.deactivate(location)
+    $redis.srem "#{$options.global_prefix}:sites", location
+    $redis.sadd "#{$options.global_prefix}:inactive:sites", location
+  end
+  
+  
+  def self.activate(location)
+    $redis.srem "#{$options.global_prefix}:inactive:sites", location
+    $redis.sadd "#{$options.global_prefix}:sites", location
+  end
+  
+  
+  def self.inactive
+    keys = $redis.smembers "#{$options.global_prefix}:inactive:sites"
+    sites = []
+    keys.each do |site|
+      sites << self.get(site)
+    end
+    sites
+  end
+
+
+
   
   def initialize(location)
     properties = $redis.hgetall "#{$options.global_prefix}:#{location}"
