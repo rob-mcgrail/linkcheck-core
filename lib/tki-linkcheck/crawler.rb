@@ -41,8 +41,13 @@ class Crawler
     require 'uri'
     a = page.doc.css('a')
     a = a.map {|link| link.attribute('href').to_s}
-    a.uniq!
-    a.delete_if {|link| link =~ /^mailto:/} #remove mailto
+    a = filter_urls(a, page)
+    a = clean_urls(a, page)
+    a
+  end
+
+
+  def clean_urls(a, page)
     a.map! do |link|
       if link !~ /^[a-z]+:\/\// #doesn't start with a protocol
         location = "http://#{page.url.host}/"
@@ -50,7 +55,20 @@ class Crawler
       else
         link
       end
-#      link = URI.escape(link).gsub('%23', '#')
+      #link = URI.escape(link).gsub('%23', '#')
+    end
+    a
+  end
+
+
+  def filter_urls(a, page)
+    a.uniq!
+    a.delete_if do |link|
+      outcome = nil
+      $options.permanently_ignore.each do |match|
+        outcome = link =~ match
+      end
+      outcome
     end
     a = [] if page.doc.at_xpath("//base") # because, really guys?
     a
