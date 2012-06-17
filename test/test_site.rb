@@ -84,14 +84,6 @@ class TestSite < MiniTest::Unit::TestCase
   end
 
 
-  def test_broken_pages_increments
-    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
-    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
-    assert_equal '1', $redis.get("#{$options.global_prefix}:#{@site.location}:count:broken_pages")
-    @site.add_broken('http://example.com/b', 'http://a.com', :problem1)
-  end
-
-
   def test_problems_can_be_symbols
     @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
     assert_includes $redis.smembers("#{$options.global_prefix}:#{@site.location}:problems"), 'problem1'
@@ -132,16 +124,6 @@ class TestSite < MiniTest::Unit::TestCase
   end
 
 
-  def test_add_to_blacklist_changes_broken_pages_count_appropriately
-    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
-    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
-    @site.add_broken('http://example.com/b', 'http://b.com', :problem1)
-    assert_equal 2, @site.pages_with_brokens_count
-    @site.blacklist 'http://b.com'
-    assert_equal 1, @site.pages_with_brokens_count
-  end
-
-
   def test_remove_from_blacklist_changes_broken_count
     @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
     @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
@@ -149,17 +131,6 @@ class TestSite < MiniTest::Unit::TestCase
     assert_equal 1, @site.broken_links_count
     @site.remove_from_blacklist 'http://b.com'
     assert_equal 2, @site.broken_links_count
-  end
-
-
-  def test_remove_from_blacklist_changes_broken_pages_count_appropriately
-    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
-    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
-    @site.add_broken('http://example.com/b', 'http://b.com', :problem1)
-    @site.blacklist 'http://b.com'
-    assert_equal 1, @site.pages_with_brokens_count
-    @site.remove_from_blacklist 'http://b.com'
-    assert_equal 2, @site.pages_with_brokens_count
   end
 
 
@@ -172,16 +143,6 @@ class TestSite < MiniTest::Unit::TestCase
   end
 
 
-  def test_add_to_temp_blacklist_changes_broken_pages_count_appropriately
-    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
-    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
-    @site.add_broken('http://example.com/b', 'http://b.com', :problem1)
-    assert_equal 2, @site.pages_with_brokens_count
-    @site.temp_blacklist 'http://b.com'
-    assert_equal 1, @site.pages_with_brokens_count
-  end
-
-
   def test_remove_from_temp_blacklist_changes_broken_count
     @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
     @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
@@ -191,16 +152,6 @@ class TestSite < MiniTest::Unit::TestCase
     assert_equal 2, @site.broken_links_count
   end
 
-
-  def test_remove_from_temp_blacklist_changes_broken_pages_count_appropriately
-    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
-    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
-    @site.add_broken('http://example.com/b', 'http://b.com', :problem1)
-    @site.temp_blacklist 'http://b.com'
-    assert_equal 1, @site.pages_with_brokens_count
-    @site.remove_from_temp_blacklist 'http://b.com'
-    assert_equal 2, @site.pages_with_brokens_count
-  end
 
   def test_links_by_problem_page_returns_expected_structure
     @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
@@ -299,12 +250,10 @@ class TestSite < MiniTest::Unit::TestCase
     assert_equal '1', $redis.get("#{$options.global_prefix}:#{@site.location}:count:pages")
     assert_equal '2', $redis.get("#{$options.global_prefix}:#{@site.location}:count:checked")
     assert_equal '1', $redis.get("#{$options.global_prefix}:#{@site.location}:count:broken")
-    assert_equal '1', $redis.get("#{$options.global_prefix}:#{@site.location}:count:broken_pages")
     @site.reset_counters
     assert_equal '0', $redis.get("#{$options.global_prefix}:#{@site.location}:count:pages")
     assert_equal '0', $redis.get("#{$options.global_prefix}:#{@site.location}:count:checked")
     assert_equal '0', $redis.get("#{$options.global_prefix}:#{@site.location}:count:broken")
-    assert_equal '0', $redis.get("#{$options.global_prefix}:#{@site.location}:count:broken_pages")
   end
 
 
@@ -348,8 +297,8 @@ class TestSite < MiniTest::Unit::TestCase
     @site.purge_orphaned_blacklist_items
 
     structure = @site.pages_by_blacklisted_link
-    assert_nil structure['http://a.com']
-    assert_nil structure['http://b.com']
+    assert_nil structure['http://a.com'].first
+    assert_nil structure['http://b.com'].first
 
     assert_equal ['http://example.com/a'], structure['http://c.com']
   end

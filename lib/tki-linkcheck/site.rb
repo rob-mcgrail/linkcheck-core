@@ -1,22 +1,4 @@
 class Sites
-  def self.purge_orphaned_blacklist_items
-    Sites.all.each do |location|
-      @site = Site.new('location')
-      @site.purge_orphaned_blacklist_items
-    end
-  end
-
-
-  def purge_orphaned_blacklist_items
-    $redis.smembers(@key[:blacklist]).each do |link|
-      i = $redis.scard @key[:link] + ":#{link}"
-      if i == 0
-        self.remove_from_blacklist link
-      end
-    end
-  end
-
-
   def self.create(properties = {})
     if properties.has_key? :location
       if properties[:location] =~ /^http/
@@ -102,7 +84,6 @@ class Sites
       :temp_blacklist => "#{@prefix}:blacklist:temp",
       :page_count => "#{@prefix}:count:pages",
       :broken_count => "#{@prefix}:count:broken",
-      :broken_page_count => "#{@prefix}:count:broken_pages",
       :check_count => "#{@prefix}:count:checked",
     }
   end
@@ -177,24 +158,20 @@ class Sites
 
 
   def add_broken(page, link, problem)
-    # check link isn't on permanently ignore regex list
-    unless should_be_ignored?(link)
-      # increment broken page count if not already counted
-      unless $redis.sismember @key[:pages], page
-        $redis.incr @key[:broken_page_count]
-        $redis.sadd @key[:pages], page
-      end
-      $redis.multi do
-        $redis.sadd @key[:page] + ":#{page}", link
-        $redis.sadd @key[:links], link
-        $redis.sadd @key[:link] + ":#{link}", page
-        $redis.sadd @key[:problems], problem.to_s
-        $redis.sadd @key[:problem] + ":#{problem}", link
-      end
-      # increment broke count if not blacklisted
-      unless $redis.sismember @key[:blacklist], link
-        $redis.incr @key[:broken_count]
-      end
+    # increment broken page count if not already counted
+    unless $redis.sismember @key[:pages], page
+      $redis.sadd @key[:pages], page
+    end
+    $redis.multi do
+      $redis.sadd @key[:page] + ":#{page}", link
+      $redis.sadd @key[:links], link
+      $redis.sadd @key[:link] + ":#{link}", page
+      $redis.sadd @key[:problems], problem.to_s
+      $redis.sadd @key[:problem] + ":#{problem}", link
+    end
+    # increment broken count if not blacklisted
+    unless $redis.sismember @key[:blacklist], link
+      $redis.incr @key[:broken_count]
     end
   end
 
@@ -227,7 +204,6 @@ class Sites
     unless $redis.sismember(@key[:temp_blacklist], link)
       $redis.sadd @key[:temp_blacklist], link
       $redis.decr @key[:broken_count]
-      adjust_broken_pages_count_by_blacklist(link, :adding)
     end
   end
 
@@ -236,7 +212,6 @@ class Sites
     if $redis.sismember(@key[:blacklist], link)
       $redis.srem @key[:blacklist], link
       $redis.incr @key[:broken_count]
-      adjust_broken_pages_count_by_blacklist(link, :removing)
     end
   end
 
@@ -245,7 +220,6 @@ class Sites
     if $redis.sismember(@key[:temp_blacklist], link)
       $redis.srem @key[:temp_blacklist], link
       $redis.incr @key[:broken_count]
-      adjust_broken_pages_count_by_blacklist(link, :removing)
     end
   end
 
@@ -254,7 +228,6 @@ class Sites
     $redis.set @key[:page_count], 0
     $redis.set @key[:check_count], 0
     $redis.set @key[:broken_count], 0
-    $redis.set @key[:broken_page_count], 0
   end
 
 
@@ -280,21 +253,13 @@ class Sites
     else
       nil
     end
-  end # test for int
+  end
 
 
   def pages_checked_count
     s = $redis.get @key[:page_count]
-    if s
-      s.to_i
-    else
-      nil
-    end
-  end # test for int
-
-
-  def links_checked_count
-    s = $redis.get @key[:check_count]
+    puts s
+    s
     if s
       s.to_i
     else
@@ -303,8 +268,8 @@ class Sites
   end
 
 
-  def pages_with_brokens_count
-    s = $redis.get @key[:broken_page_count]
+  def links_checked_count
+    s = $redis.get @key[:check_count]
     if s
       s.to_i
     else
@@ -334,25 +299,8 @@ class Sites
       $redis.sdiffstore 'tmp:remainder', @key[:page] + ":#{page}", 'tmp:exclude'
       i = $redis.scard('tmp:remainder')
       $redis.del 'tmp:remainder'
-      case context
-      when :adding
-        # if that is an empty set, decrement the broken page count
-        $redis.decr @key[:broken_page_count] if i == 0
-      when :removing
-        # if that is a set of 1, increment the broken page count
-        $redis.incr @key[:broken_page_count] if i == 1
-      end
     end
     $redis.del 'tmp:exclude'
-  end
-
-
-  def should_be_ignored?(link)
-    kill = nil
-    $options.permanently_ignore do |pattern|
-      kill = true if link =~ pattern
-    end
-    kill
   end
 
 
@@ -363,6 +311,24 @@ class Sites
         $redis.del set_prefix + ":#{k}"
       end
       $redis.del superset
+    end
+  end
+
+
+  def self.purge_orphaned_blacklist_items
+    Sites.all.each do |location|
+      @site = Site.new('location')
+      @site.purge_orphaned_blacklist_items
+    end
+  end
+
+
+  def purge_orphaned_blacklist_items
+    $redis.smembers(@key[:blacklist]).each do |link|
+      i = $redis.scard @key[:link] + ":#{link}"
+      if i == 0
+        self.remove_from_blacklist link
+      end
     end
   end
 end
