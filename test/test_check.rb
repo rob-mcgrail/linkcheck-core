@@ -30,7 +30,7 @@ class TestCheck < MiniTest::Unit::TestCase
     assert_equal :bad_anchor, Check.validate(@doc, 'http://example.com/#nothingAtAll')
   end
   
-  
+
   def test_invalid_anchor_returns_correct_object
     assert_equal :bad_anchor, Check.validate(@doc, 'http://example.com/#someClass')
     assert_equal :bad_anchor, Check.validate(@doc, 'http://example.com/#nothingAtAll')
@@ -51,7 +51,7 @@ class TestCheck < MiniTest::Unit::TestCase
     assert_equal :moved_permanently, Check.validate(@doc, 'http://example.com/page')
     
     stub_request(:get, "example.com/page").to_return(:status => 302)
-    assert_equal :found, Check.validate(@doc, 'http://example.com/page')
+    assert_nil Check.validate(@doc, 'http://example.com/page')
     
     stub_request(:get, "example.com/page").to_return(:status => 303)
     assert_equal :see_other, Check.validate(@doc, 'http://example.com/page')
@@ -68,10 +68,10 @@ class TestCheck < MiniTest::Unit::TestCase
   
   
   def test_invalid_uris_return_correct_symbol
-    assert_equal :invalid, Check.validate(@doc, 'example/page')  
+    assert_equal :scheme_ignored, Check.validate(@doc, 'example/page')  
     assert_equal :invalid, Check.validate(@doc, 'http:// example.com')
-    assert_equal :invalid, Check.validate(@doc, '$')
-    assert_equal :invalid, Check.validate(@doc, '')
-    assert_equal :invalid, Check.validate(@doc, 'git://example.com')
+    assert_equal :scheme_ignored, Check.validate(@doc, '$')
+    assert_equal :scheme_ignored, Check.validate(@doc, '')
+    assert_equal :scheme_ignored, Check.validate(@doc, 'git://example.com')
   end
 end

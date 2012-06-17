@@ -1,6 +1,7 @@
 class Sites
   def self.create(properties = {})
     if properties.has_key? :location
+      properties[:location].gsub!(/\/$/, '') # normalize locations
       $redis.sadd "#{$options.global_prefix}:sites", properties[:location]
       properties.each do |k,v|
         $redis.hset "#{$options.global_prefix}:#{properties[:location]}", k.to_s, v.to_s
@@ -11,11 +12,12 @@ class Sites
   
   
   def self.all
-    sites = $redis.smembers "#{$options.global_prefix}:sites"
-    a = []
-    sites.each do |site|
-      a << self.get(site)
+    keys = $redis.smembers "#{$options.global_prefix}:sites"
+    sites = []
+    keys.each do |site|
+      sites << self.get(site)
     end
+    sites
   end
   
   
@@ -50,6 +52,68 @@ class Sites
       :check_count => "#{@prefix}:count:checked",
     }
   end
+  
+  
+  def method_missing(m, *args, &block)
+    nil
+  end
+  
+  
+  def broken_links_count
+    s = $redis.get @key[:broken_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end # test for int
+  
+  
+  def pages_checked_count
+    s = $redis.get @key[:page_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end # test for int
+
+
+  def links_checked_count
+    s = $redis.get @key[:check_count]
+    if s
+      s.to_i
+    else
+      nil
+    end
+  end # test for int
+    
+  
+  def pages_with_brokens_count
+    $redis.scard @key[:pages]
+  end
+
+
+  def links_by_problem_by_page
+    h = {}
+    $redis.smembers(@key[:pages]).each do |page|
+      h[page] = {}
+      $redis.del 'tmp:exclude', 'tmp:cleaned'
+      $redis.sunionstore 'tmp:exclude', @key[:blacklist], @key[:temp_blacklist]
+      $redis.sdiffstore 'tmp:cleaned', @key[:page] + ":#{page}", 'tmp:exclude'
+      problems = $redis.smembers(@key[:problems])
+#      problems.delete('unknown')
+      problems.each do |problem|
+        h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
+      end
+    end
+    h
+  end
+  
+  
+  def pages_by_link
+  
+  end
 
 
   def add_broken(page, link, problem)
@@ -60,19 +124,25 @@ class Sites
       $redis.sadd @key[:link] + ":#{link}", page
       $redis.sadd @key[:problems], problem.to_s
       $redis.sadd @key[:problem] + ":#{problem}", link
-      $redis.incr @key[:broken_count]
     end
+    unless $redis.sismember @key[:blacklist], link
+      $redis.incr @key[:broken_count]
+    end #add a test for this last addition...
   end
 
 
   def log_link(link)
     $redis.incr @key[:check_count]
-    LinkCache.add link
   end
   
   
   def log_page(page)
     $redis.incr @key[:page_count]
+  end
+  
+  
+  def log_crawl
+    $redis.hset "#{@prefix}", 'last_checked', Time.now.to_i
   end
   
   

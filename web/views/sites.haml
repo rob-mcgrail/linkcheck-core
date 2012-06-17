@@ -1,5 +1,21 @@
 .row
     .span12
-        %h2 Sites
-        %hr
-    
+        %h2.siteListHeader Sites
+        %ul.nav.nav-tabs
+            %li.active
+                %a{:href => '#recent', :data => {:toggle => 'tab'}}
+                    != "Checked this week" + "<span class='badge tabBadge'>#{@recent.length}</span>"
+            %li   
+                %a{:href => '#old', :data => {:toggle => 'tab'}}
+                    != "Others" + "<span class='badge tabBadge'>#{@old.length}</span>"
+        
+        .tab-content
+            .tab-pane.active#recent
+                %table.siteListTable
+                    - @recent.each do |site|
+                        != haml :_site, :locals => { :site => site }
+                    
+            .tab-pane#old
+                %table.table.siteListTable             
+                    - @old.each do |site|
+                        != haml :_site, :locals => { :site => site }

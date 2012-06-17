@@ -5,9 +5,10 @@ class Crawler
   
   
   def crawl
-    LinkCache.flush # I don't belong here...
+    LinkCache.flush # only cleared if not recently used
     pre_cleanup
     Anemone.crawl(@site.location) do |anemone|
+      @site.log_crawl
       anemone.on_every_page do |page|
         check_links(page) if page.doc
         @site.log_page page.url
@@ -22,11 +23,13 @@ class Crawler
   def check_links(page)
     links = extract_links(page)
     links.each do |link|
-      unless LinkCache.checked? link
+      unless LinkCache.passed? link
         problem = Check.validate(page, link)
         puts problem
         if problem
           @site.add_broken page.url, link, problem
+        else
+          LinkCache.add link # don't check passed links uris again
         end
         @site.log_link link
       end
@@ -55,7 +58,6 @@ class Crawler
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
-    LinkCache.flush # this doesn't belong here really
   end
   
   
