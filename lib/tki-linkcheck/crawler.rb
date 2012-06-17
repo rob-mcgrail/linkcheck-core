@@ -30,7 +30,7 @@ class Crawler
           end
 
           $redis.set "#{$options.global_prefix}:status", "#{page.url}"
-          $redis.expire "#{$options.global_prefix}:status", 10
+          $redis.expire "#{$options.global_prefix}:status", 30
 
           puts "On page -> #{page.url}"
 
