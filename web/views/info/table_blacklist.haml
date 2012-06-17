@@ -4,9 +4,9 @@
     .blacklistBlock{:class => "row-#{i}"}
         .row
             .targetable{:id => "row-#{i}"}
-                .span9
+                .span11
                     != link_to(link, link)
-                .span3
+                .span1
                     != haml :'info/un_blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
 
         - unless pages.empty?

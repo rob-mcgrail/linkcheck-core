@@ -26,14 +26,18 @@ $("form.backlistManagement").submit(function(event) {
   link = $form.find( 'input[name="link"]' ).val(),
   url = $form.attr( 'action' );
   id = $form.attr( 'id' );
-  $.post( url, { site: site, link: link },
-    function( data ) {
-      $('#tab-pages').load('/ajax/count/pages', {site: site});
-      $('#tab-temp').load('/ajax/count/temp', {site: site});
-      $('#tab-blacklist').load('/ajax/count/blacklist', {site: site});
-    }
-  );
+  $.post( url, { site: site, link: link });
   id = id.split('-');
   id = '.row-' + id[1];
   $(id).fadeOut();
+});
+
+// updating linkchecker status
+
+$(document).ready(function() {
+ 	 $("#checkStatus").load("/check-status");
+   var refreshId = setInterval(function() {
+      $("#checkStatus").load('/check-status');
+   }, 9000);
+   $.ajaxSetup({ cache: false });
 });
