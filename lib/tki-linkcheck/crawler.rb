@@ -13,7 +13,7 @@ class Crawler
       :accept_cookies => true,
       :cookies => SSOAuth.get_cookies(@site.location),
     }
-    LinkCache.flush # only cleared if not recently used
+    LinkCache.flush
     pre_cleanup
     Anemone.crawl(@site.location, opts) do |anemone|
       @site.log_crawl
@@ -32,17 +32,13 @@ class Crawler
   def check_links(page)
     links = extract_links(page)
     links.each do |link|
-      unless LinkCache.passed? link
-        check = Check.new
-        problem = check.validate(page, link)
-        puts problem # remove
-        if problem
-          @site.add_broken page.url, link, problem
-        else
-          LinkCache.add link
-        end
-        @site.log_link link
+      check = Check.new
+      problem = check.validate(page, link)
+      puts problem # remove
+      if problem
+        @site.add_broken page.url, link, problem
       end
+      @site.log_link link
     end
   end
 
