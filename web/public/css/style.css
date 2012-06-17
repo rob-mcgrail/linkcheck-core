@@ -32,11 +32,55 @@
 }
 
 .smaller {
-  font-size: 92%;
+  font-size: 95%;
 }
 
+.btn-small {
+  font-size: 70%;
+  padding: 3px;
+}
 
+.littleForm {
+  margin-bottom: 1px;
+  float: left;
+  padding-left: 6px;
+}
 
+.thin {
+  margin :3px;
+  padding-bottom: 5px;
+}
 
+.pageTitle {
+  padding-top: 15px;
+}
+
+.subtleLink {
+  color: #555;
+}
+
+.problemLabel {
+  color: #555;
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+
+.goLeft {
+  text-align: left; 
+}
+
+li.link {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.pageInfo {
+   overflow:hidden;
+}
+
+.opacitize {
+    filter: alpha(opacity=20);
+    opacity: 0.2;
+}
 
 
