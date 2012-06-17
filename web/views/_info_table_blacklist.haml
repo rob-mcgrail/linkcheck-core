@@ -1,34 +1,31 @@
 - i = 0               
-- @links.each do |link, hash_of_problems|
+- @links.each do |problem, hash_of_links|
     .row
         .span12 
             %h3.pageTitle
-                != link_to(link, link, :class => 'subtleLink')
+                != problem.gsub('_', ' ').proper_case
             %hr.thin
-    - hash_of_problems.each do |problem, array|
+    - hash_of_links.each do |link, array|
+        - i += 1
         - unless array.empty?
             .row
-                .span12
-                    %h4.problemLabel
-                        != problem.gsub('_', ' ').proper_case
+                .pageInfo{:id => "row-#{i}"}
+                    .span6
+                        != link_to(link, link)
+                    .span3
+                        -#!= haml :_un_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
            
             .row
-                %ul.unstyled
-                    - array.each do |page|
-                        - i += 1
-                        
-                        .pageInfo{:id => "row-#{i}"}
-                            .span8
+                .span12
+                    %a{:class => 'accordion-toggle subtleLink', :data => {:toggle => 'collapse', :target => "#table-#{i}"}}
+                        - s = "Appears on #{array.length} page"
+                        != array.length == 1 ? s : s.plural
+            .row
+                .collapse{:id => "table-#{i}"}
+                    %ul.unstyled
+                        - array.each do |page|
+                            .span12
                                 %li.link
                                     != link_to(page, page)
-                            .span4
-                                != haml :_un_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
-                                
-                                
-                                ### You need to make a method that gets back:
-                                
-                                {'link' => {'problem' => [page, page]}}
-                                
-                                and create a partial for restoring links from blacklist...
-                                
-                                and make sure the unblacklist code for temp is good, and has tests
+
+

@@ -28,4 +28,8 @@ class String
   def proper_case
     self.slice(0,1).capitalize + self.slice(1..-1)
   end
+  
+  def plural
+    self + 's'
+  end
 end
