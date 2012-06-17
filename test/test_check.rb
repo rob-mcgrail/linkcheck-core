@@ -42,8 +42,8 @@ class TestCheck < MiniTest::Unit::TestCase
     stub_request(:get, "example.com/page1").to_return(:status => 200)
     assert_nil @check.validate(@doc, 'http://example.com/page1')
 
-    stub_request(:get, "example.com/page2").to_return(:status => 404)
-    assert_equal :not_found, @check.validate(@doc, 'http://example.com/page2')
+    stub_request(:get, "example.com/page10").to_return(:status => 404)
+    assert_equal :not_found, @check.validate(@doc, 'http://example.com/page10')
 
     stub_request(:get, "example.com/page3").to_return(:status => 403)
     assert_equal :forbidden, @check.validate(@doc, 'http://example.com/page3')
@@ -69,17 +69,17 @@ class TestCheck < MiniTest::Unit::TestCase
 
 
   def test_http_responses_cached
-    stub_request(:get, "example.com/page1").to_return(:status => 200)
-    assert_nil @check.validate(@doc, 'http://example.com/page1')
+    stub_request(:get, "example.com/other/page1").to_return(:status => 200)
+    assert_nil @check.validate(@doc, 'http://example.com/other/page1')
 
-    stub_request(:get, "example.com/page1").to_return(:status => 404)
-    assert_nil @check.validate(@doc, 'http://example.com/page1')
+    stub_request(:get, "example.com/other/page1").to_return(:status => 404)
+    assert_nil @check.validate(@doc, 'http://example.com/other/page1')
 
-    stub_request(:get, "example.com/page2").to_return(:status => 302)
-    assert_equal :not_found, @check.validate(@doc, 'http://example.com/page2')
+    stub_request(:get, "example.com/other/page2").to_return(:status => 303)
+    assert_equal :see_other, @check.validate(@doc, 'http://example.com/other/page2')
 
-    stub_request(:get, "example.com/page2").to_return(:status => 200)
-    assert_equal :not_found, @check.validate(@doc, 'http://example.com/page2')
+    stub_request(:get, "example.com/other/page2").to_return(:status => 200)
+    assert_equal :see_other, @check.validate(@doc, 'http://example.com/other/page2')
   end
 
 
