@@ -150,7 +150,7 @@ class Sites
 
 
   def log_link(link)
-    $redis.incr @key[:check_count] unless LinkCache.checked? link
+    $redis.incr @key[:check_count]
   end
 
 
