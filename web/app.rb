@@ -24,7 +24,7 @@ end
 
 
 helpers do
-  def pdf(location, destination)
+  def pdf(location)
     require 'open3'
     @context = :pages
     @site = Sites.get(location)
@@ -119,7 +119,7 @@ end
 
 get '/site/:location/pdf' do
   location = params[:location].from_slug
-  @pdf = pdf(location, "/#{Time.now.to_i}.pdf")
+  @pdf = pdf(location)
   [200, {'Content-Type' => 'application/pdf'}, @pdf]
 end
 
