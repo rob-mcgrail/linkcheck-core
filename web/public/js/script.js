@@ -17,8 +17,6 @@ $(".targetable").hover(
   }
 );
 
-
-
 $("form.backlistManagement").submit(function(event) {
   event.preventDefault();
   var $form = $( this ),
