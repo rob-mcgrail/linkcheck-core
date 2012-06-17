@@ -1,6 +1,4 @@
 class Sites
-  attr_reader :location, :last_checked
-  
   def self.create(properties = {})
     if properties.has_key? :location
       $redis.sadd "#{$options.global_prefix}:sites", properties[:location]
@@ -22,8 +20,10 @@ class Sites
   def initialize(location)
     properties = $redis.hgetall "#{$options.global_prefix}:#{location}"
     
-    @location = properties['location']
-    @last_checked = properties['last_checked']
+    properties.each do |k,v|
+      instance_variable_set("@#{k}".to_sym, v)
+      self.class.__send__(:attr_accessor, "#{k}".to_sym)
+    end
     
     @prefix = "#{$options.global_prefix}:#{@location}"
     
