@@ -28,8 +28,13 @@ class Check
       begin
         uri = URI.parse(link)
         if $options.checked_classes.member? uri.class
-          response = Net::HTTP.get_response(uri)
-          case response.code
+          begin
+            response = Net::HTTP.get_response(uri)
+            code = response.code
+          rescue Interrupt
+            code = nil
+          end
+          case code
           when '200'
             nil
           when '404'
@@ -38,7 +43,7 @@ class Check
             :forbidden
           when '301'
             :moved_permanently
-          when '302' # Should this be removed? This whole list configurable?
+          when '302' # Should this be removed?
             :found
           when '303'
             :see_other
