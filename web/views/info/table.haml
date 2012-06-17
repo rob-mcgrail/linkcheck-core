@@ -22,4 +22,4 @@
                                 %li.link
                                     != link_to(link, link)
                             .span4
-                                != haml :_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+                                != haml :'info/blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}

@@ -12,7 +12,7 @@
         
         .tab-content
             .tab-pane.active#recent
-                != haml :_site_table, :locals => { :sites => @recent }
+                != haml :'sites/table', :locals => { :sites => @recent }
                     
             .tab-pane#old
-                != haml :_site_table, :locals => { :sites => @old }
+                != haml :'sites/table', :locals => { :sites => @old }

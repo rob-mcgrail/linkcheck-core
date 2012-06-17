@@ -7,7 +7,7 @@
                 .span9
                     != link_to(link, link)
                 .span3
-                    != haml :_un_blacklist, :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
+                    != haml :'info/un_blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
                             
         - unless pages.empty?
 
