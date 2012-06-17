@@ -93,7 +93,7 @@ get '/report/:location' do
   location = params[:location]
   str = "/usr/bin/wkhtmltopdf #{request.host}:#{request.port}/site/#{location} #{settings.public_folder}/pdf/#{params[:location]}.pdf"
   puts str
-  system(str)
+  system str
   "<a href=\"/pdf/#{params[:location]}.pdf\">PDF</a>"
 end
 

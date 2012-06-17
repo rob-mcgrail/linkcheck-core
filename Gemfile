@@ -16,8 +16,7 @@ end
 group :web do
   gem "sinatra"
   gem "sinatra-flash"
-  gem "thin"
-  gem "unicorn"
+  gem "mongrel"
   gem "haml"
   gem "RedCloth"
   gem "warden"
