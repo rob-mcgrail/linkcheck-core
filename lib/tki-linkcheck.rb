@@ -12,7 +12,6 @@ require './lib/tki-linkcheck/crawler'
 
 
 
-
-#site = Site.new('http://scienceonline.tki.org.nz/')
+#site = Sites.create :location => 'http://scienceonline.tki.org.nz/'
 
 #Crawler.new(site).crawl

@@ -89,8 +89,4 @@ class Sites
       $redis.del superset
     end
   end
-  
 end
-
-
-
