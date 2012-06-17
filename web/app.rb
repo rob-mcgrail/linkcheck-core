@@ -65,11 +65,6 @@ get '/site/:location/blacklist?' do
   @context = :blacklist
   @site = Sites.get(location)
   @links = @site.pages_by_blacklisted_link(:permanent)
-  @links.each do |k,v|
-    puts 'k: ' + k
-    puts v.class
-    puts v.length
-  end
   @tab_cards = tab_cardinalities(@site)
   haml :info_blacklist
 end
