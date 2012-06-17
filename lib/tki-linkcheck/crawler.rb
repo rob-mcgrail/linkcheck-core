@@ -38,18 +38,19 @@ class Crawler
 
 
   def extract_links(page)
+    require 'uri'
     a = page.doc.css('a')
     a = a.map {|link| link.attribute('href').to_s}
     a.uniq!
     a.delete_if {|link| link =~ /^mailto:/} #remove mailto
     a.map! do |link|
-      link.gsub!(' ', '%20')
       if link !~ /^[a-z]+:\/\// #doesn't start with a protocol
         location = "http://#{page.url.host}/"
         link = location + link.gsub(/^\//,'') # make absolute
       else
         link
       end
+      link = URI.escape(link, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
     end
     a = [] if page.doc.at_xpath("//base") # because, really guys?
     a
