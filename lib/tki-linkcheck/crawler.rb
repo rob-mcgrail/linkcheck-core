@@ -7,7 +7,7 @@ class Crawler
   def crawl
     LinkCache.flush # only cleared if not recently used
     pre_cleanup
-    Anemone.crawl(@site.location) do |anemone|
+    Anemone.crawl(@site.location, :discard_page_bodies => true) do |anemone|
       @site.log_crawl
       anemone.on_every_page do |page|
         check_links(page) if page.doc
@@ -24,7 +24,8 @@ class Crawler
     links = extract_links(page)
     links.each do |link|
       unless LinkCache.passed? link
-        problem = Check.validate(page, link)
+        check = Check.new
+        problem = check.validate(page, link)
         puts problem
         if problem
           @site.add_broken page.url, link, problem
@@ -50,6 +51,7 @@ class Crawler
         link
       end
     end
+    a = [] if page.doc.at_xpath("//base") # because, really guys?
     a
   end
 

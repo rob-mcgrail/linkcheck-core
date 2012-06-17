@@ -4,7 +4,7 @@ class Check
   require 'net/https'
 
 
-  def self.validate(page, link)
+  def validate(page, link)
     if link =~ /^#{Regexp.escape(page.url.to_s.gsub(/\/$/,''))}\/?#[^!]/
       validate_relative_anchor(page, link)
     else
@@ -15,7 +15,7 @@ class Check
 
   private
 
-  def self.validate_relative_anchor(page, link)
+  def validate_relative_anchor(page, link)
     link.gsub!(/^.+#/, '')
     unless page.doc.at_xpath("//a[@name='#{link}']", "//*[@id='#{link}']")
       :bad_anchor
@@ -25,7 +25,7 @@ class Check
   end
 
 
-  def self.validate_link(link)
+  def validate_link(link)
     if link =~ URI::regexp($options.valid_schemes)
       begin
         uri = URI.parse(link)
@@ -65,7 +65,7 @@ class Check
   end
 
 
-  def self.http_request(uri)
+  def http_request(uri)
     begin
       response = Net::HTTP.get_response(uri)
       code = response.code
@@ -78,7 +78,7 @@ class Check
   end
 
 
-  def self.https_request(uri)
+  def https_request(uri)
     begin
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
@@ -93,6 +93,4 @@ class Check
     end
     code
   end
-
-
 end
