@@ -230,16 +230,23 @@ class TestSite < MiniTest::Unit::TestCase
     @site.add_broken('http://example.com/c', 'http://e.com', :problem3)
     @site.blacklist 'http://b.com'
     @site.blacklist 'http://e.com'
-    structure = @site.pages_by_blacklisted_links_by_problem
+    structure = @site.pages_by_blacklisted_link
     assert_equal 2, structure.length
     assert_kind_of Hash, structure
-    assert_kind_of Hash, structure['problem1']
-    assert_kind_of Array, structure['problem1']['http://b.com']
-    assert_includes structure['problem1']['http://b.com'], 'http://example.com/a'
-    assert_equal 1, structure['problem3']['http://e.com'].length
-    assert_equal 2, structure['problem1']['http://b.com'].length
+    assert_kind_of Array, structure['http://b.com']
+    assert_includes structure['http://b.com'], 'http://example.com/a'
+    assert_equal 1, structure['http://e.com'].length
+    assert_equal 2, structure['http://b.com'].length
   end
   
+  
+  def test_orphan_blacklist_items_still_preserve_structure
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.blacklist 'http://x.com'
+    structure = @site.pages_by_blacklisted_link
+    assert_kind_of Array, structure['http://x.com']     
+  end
+
   
   def test_add_to_temp_blacklist_adds_to_blacklist
     @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
