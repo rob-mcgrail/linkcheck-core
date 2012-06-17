@@ -9,7 +9,7 @@
                 - hash_of_links.each do |link, array|
                     - unless array.empty?
                         - i += 1
-                        .targetable{:id => "row-#{i}", :class => "row-#{i}"}
+                        .targetable.spaced{:id => "row-#{i}", :class => "row-#{i}"}
                             .row
                                 .span10
                                     %h4.linkTitle
