@@ -18,7 +18,7 @@ $(".targetable").hover(
 );
 
 
-$("form").submit(function(event) {
+$("form.backlistManagement").submit(function(event) {
   event.preventDefault();
   var $form = $( this ),
   site = $form.find( 'input[name="site"]' ).val(),
