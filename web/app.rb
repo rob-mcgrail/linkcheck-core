@@ -24,6 +24,7 @@ end
 
 
 helpers do
+  # In development
   def pdf(page, destination)
     # echo "<b>Hello</b> World!" | wkhtmltopdf - foo.pdf --user-style-sheet /url/css.css
     location = params[:location]
@@ -81,11 +82,11 @@ get '/sites/manage/?' do
    haml :manage
 end
 
-# does this actually do anything?
-#get '/sites/add' do
-#  title 'add'
-#  haml :add
-#end
+
+get '/sites/add' do
+  title 'add'
+  haml :add
+end
 
 
 
