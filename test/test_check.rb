@@ -8,7 +8,7 @@ class TestCheck < MiniTest::Unit::TestCase
   def setup
     require 'ostruct'
     @doc = OpenStruct.new
-    @doc.url = 'http://example.com/'
+    @doc.url = URI('http://example.com/')
     @doc.doc = Nokogiri::HTML(File.new('./test/mocks/anchors.html'))
   end
 
