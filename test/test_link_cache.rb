@@ -63,7 +63,7 @@ class TestLinkCache < MiniTest::Unit::TestCase
     $options.linkcache_time = 60
     LinkCache.add 'http://thing.com', nil
     assert LinkCache.checked? 'http://thing.com'
-    LinkCache.flush
+    LinkCache.flush_if_stale
     assert LinkCache.checked? 'http://thing.com'
   end
 
@@ -71,7 +71,7 @@ class TestLinkCache < MiniTest::Unit::TestCase
   def test_forced_flush_ignores_recency
     $options.linkcache_time = 60
     LinkCache.add 'http://thing.com', nil
-    LinkCache.force_flush
+    LinkCache.flush
     refute LinkCache.checked? 'http://thing.com'
   end
 end
