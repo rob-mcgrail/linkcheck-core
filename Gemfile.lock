@@ -10,6 +10,7 @@ GEM
     minitest (2.11.4)
     minitest-colorize (0.0.4)
       minitest (~> 2.0)
+    mock_redis (0.4.1)
     nokogiri (1.5.2)
     rake (0.9.2)
     redis (2.2.2)
@@ -29,6 +30,7 @@ DEPENDENCIES
   anemone
   minitest
   minitest-colorize
+  mock_redis
   rake
   redis
   trollop
