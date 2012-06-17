@@ -78,23 +78,29 @@ get '/sites/manage/?' do
    @sites = Sites.all
    @inactive_sites = Sites.inactive
    @admin = true
-   haml :admin
+   haml :manage
 end
 
 # does this actually do anything?
-get '/sites/add' do
-  title 'add'
-  haml :add
+#get '/sites/add' do
+#  title 'add'
+#  haml :add
+#end
+
+
+
+get '/admin/?' do
+  title 'admin'
+  @admin = true
+  haml :admin
 end
 
-# to come:
-#
-#
+
 post '/purge_orphaned_blacklist_items' do
   Sites.purge_orphaned_blacklist_items
-  redirect '/sites/manage'
+  redirect '/admin'
 end
-#
+
 
 get '/site/:location/pdf' do
   location = params[:location]

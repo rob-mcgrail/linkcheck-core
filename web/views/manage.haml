@@ -1,0 +1,21 @@
+.row
+    .span12
+        .row
+            .span6
+                %h2
+                    Active
+                    %a{:class => 'accordion-toggle subtleLink btn addSiteLink', :data => {:toggle => 'modal', :target => "#form", :show => 'false'}}
+                        Add +
+                %hr
+
+                != haml :'manage/active'
+
+            .span6
+                %h2
+                    Inactive
+                %hr
+
+                != haml :'manage/inactive'
+
+                .modal{:id => "form", :style => 'display: none;'}
+                    != haml :'manage/site_add_form'
