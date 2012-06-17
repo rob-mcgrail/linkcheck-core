@@ -158,11 +158,10 @@ class Sites
 
 
   def add_broken(page, link, problem)
-    # increment broken page count if not already counted
-    unless $redis.sismember @key[:pages], page
-      $redis.sadd @key[:pages], page
-    end
+    blacklisted = $redis.sismember @key[:blacklist], link
+    already_added = $redis.sismember @key[:links], link
     $redis.multi do
+      $redis.sadd @key[:pages], page
       $redis.sadd @key[:page] + ":#{page}", link
       $redis.sadd @key[:links], link
       $redis.sadd @key[:link] + ":#{link}", page
@@ -170,7 +169,7 @@ class Sites
       $redis.sadd @key[:problem] + ":#{problem}", link
     end
     # increment broken count if not blacklisted
-    unless $redis.sismember @key[:blacklist], link
+    unless blacklisted || already_added
       $redis.incr @key[:broken_count]
     end
   end
