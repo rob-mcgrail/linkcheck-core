@@ -1,3 +1,10 @@
+// Make buttons in targetable divs opaque unless hovered.
+
+// <div class="targetable" id="row-1">
+//     <form class="form-1 opacitize">
+//     </form>
+// </div>
+
 var currentId = '';
 $(".targetable").hover(
   function () {
