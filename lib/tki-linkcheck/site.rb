@@ -1,4 +1,22 @@
 class Sites
+  def self.purge_orphaned_blacklist_items
+    Sites.all.each do |location|
+      @site = Site.new('location')
+      @site.purge_orphaned_blacklist_items
+    end
+  end
+
+
+  def purge_orphaned_blacklist_items
+    $redis.smembers(@key[:blacklist]).each do |link|
+      i = $redis.scard @key[:link] + ":#{link}"
+      if i == 0
+        self.remove_from_blacklist link
+      end
+    end
+  end
+
+
   def self.create(properties = {})
     if properties.has_key? :location
       if properties[:location] =~ /^http/
