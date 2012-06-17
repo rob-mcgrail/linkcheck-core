@@ -16,11 +16,11 @@
                                         != link_to(link, link, :target => 'none')
                                 .span4
                                     != haml :'info/blacklist', :locals => {:link => link, :site => @site.location, :target => "form-#{i}"}
-                            .row
+                            .row.blockOfPages
                                 .span12
                                     %a{:class => 'accordion-toggle subtleLink', :data => {:toggle => 'collapse', :target => "#table-#{i}"}}
                                         - s = "Appears on #{array.length} page"
-                                        != array.length == 1 ? s + ' +' : s.plural + " +"
+                                        != array.length == 1 ? s : s.plural
                                     .collapse.in{:id => "table-#{i}"}
                                         %ul.unstyled
                                             - array.each do |link|
