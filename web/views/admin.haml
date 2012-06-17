@@ -2,15 +2,28 @@
     .span12
         %h2 Admin
         %hr
+
+
+        %h3 Summary report
+        %br
+        .row
+            .span3
+                %a{:class => 'btn btn-info', :href => '/summary_report.csv'}
+                    Download summary CSV report
+
+            .well.span5
+                %p
+                    A summary CSV of check info for sites crawled within the last month.
+
+
         %h3 Orphaned blacklist items
         %br
-
         .row
             .span3
                 %a{:class => 'accordion-toggle btn btn-danger', :data => {:toggle => 'modal', :target => "#form", :show => 'false'}}
                     Delete orphaned blacklist items
-            .well.span5
 
+            .well.span5
                 %p
                     Permanently blacklisted items may eventually stop turning up in the weekly crawl as broken links. However, the blacklist item will remain. It is worthwhile occasionally deleting these "orphaned" blacklist items to free up datastore memory and calculation load.
                 %p
