@@ -1,6 +1,4 @@
-Bundler.require(:default)
+require './web/settings'
 
-require './settings'
-
-Dir['./modules/*.rb'].each {|file| require file }
-Dir['./app/*.rb'].each {|file| require file }
+Dir['./web/modules/*.rb'].each {|file| require file }
+Dir['./web/app/*.rb'].each {|file| require file }

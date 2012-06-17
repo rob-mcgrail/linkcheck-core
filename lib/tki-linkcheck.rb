@@ -3,7 +3,7 @@ require 'bundler/setup'
 
 Bundler.require(:default)
 
-require './config'
+require './options'
 require './lib/tki-linkcheck/redis'
 require './lib/tki-linkcheck/check'
 require './lib/tki-linkcheck/link_cache'

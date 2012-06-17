@@ -12,3 +12,14 @@ group :test do
   gem "webmock"
   gem "mock_redis"
 end
+
+group :web do
+  gem "sinatra" 
+  gem "sinatra-flash"
+  gem "thin"
+  gem "unicorn"
+  gem "haml"
+  gem "RedCloth"
+  gem "warden"
+  gem "bcrypt-ruby"
+end
