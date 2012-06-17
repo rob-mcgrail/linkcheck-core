@@ -99,7 +99,6 @@ class Sites
       if $redis.scard('tmp:cleaned') > 0
         h[page] = {}
         problems = $redis.smembers(@key[:problems])
-        # problems.delete('unknown')
         problems.each do |problem|
           # for each problem type, store links also in that set
           h[page][problem] = $redis.sinter 'tmp:cleaned', @key[:problem] + ":#{problem}"
@@ -128,21 +127,24 @@ class Sites
 
 
   def add_broken(page, link, problem)
-    # increment broken page count if not already counted
-    unless $redis.sismember @key[:pages], page
-      $redis.incr @key[:broken_page_count]
-      $redis.sadd @key[:pages], page
-    end
-    $redis.multi do
-      $redis.sadd @key[:page] + ":#{page}", link
-      $redis.sadd @key[:links], link
-      $redis.sadd @key[:link] + ":#{link}", page
-      $redis.sadd @key[:problems], problem.to_s
-      $redis.sadd @key[:problem] + ":#{problem}", link
-    end
-    # increment broke count if not blacklisted
-    unless $redis.sismember @key[:blacklist], link
-      $redis.incr @key[:broken_count]
+    # check link isn't on permanently ignore regex list
+    unless should_be_ignored?(link)
+      # increment broken page count if not already counted
+      unless $redis.sismember @key[:pages], page
+        $redis.incr @key[:broken_page_count]
+        $redis.sadd @key[:pages], page
+      end
+      $redis.multi do
+        $redis.sadd @key[:page] + ":#{page}", link
+        $redis.sadd @key[:links], link
+        $redis.sadd @key[:link] + ":#{link}", page
+        $redis.sadd @key[:problems], problem.to_s
+        $redis.sadd @key[:problem] + ":#{problem}", link
+      end
+      # increment broke count if not blacklisted
+      unless $redis.sismember @key[:blacklist], link
+        $redis.incr @key[:broken_count]
+      end
     end
   end
 
@@ -284,6 +286,15 @@ class Sites
       end
     end
     $redis.del 'tmp:exclude'
+  end
+
+
+  def should_be_ignored?(link)
+    kill = nil
+    $options.permanently_ignore do |pattern|
+      kill = true if link =~ pattern
+    end
+    kill
   end
 
 
