@@ -1,0 +1,17 @@
+source :rubygems
+
+# Sinatra
+gem "sinatra" 
+gem "sinatra-flash"
+
+# Servers
+gem "thin"
+gem "unicorn"
+
+# Templating
+gem "haml"
+gem "RedCloth"
+
+# Authentication
+gem "warden"
+gem "bcrypt-ruby"
