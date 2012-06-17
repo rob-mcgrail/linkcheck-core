@@ -10,6 +10,8 @@ class Crawler
       :delay => $options.page_delay,
       :redirect_limit => 1,
       :depth_limit => 12,
+      :accept_cookies => true,
+      :cookies => SSOAuth.get_cookies(@site.location),
     }
     LinkCache.flush # only cleared if not recently used
     pre_cleanup
