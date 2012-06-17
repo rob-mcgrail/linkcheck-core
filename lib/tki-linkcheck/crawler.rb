@@ -50,7 +50,7 @@ class Crawler
       else
         link
       end
-      link = URI.escape(link, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+#      link = URI.escape(link).gsub('%23', '#')
     end
     a = [] if page.doc.at_xpath("//base") # because, really guys?
     a
