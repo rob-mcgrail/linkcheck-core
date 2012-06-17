@@ -9,3 +9,10 @@ require './lib/tki-linkcheck/check'
 require './lib/tki-linkcheck/link_cache'
 require './lib/tki-linkcheck/site'
 require './lib/tki-linkcheck/crawler'
+
+
+
+
+site = Site.new('http://scienceonline.tki.org.nz/')
+
+Crawler.new(site).crawl

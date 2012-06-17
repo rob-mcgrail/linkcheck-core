@@ -47,34 +47,27 @@ class Site
   
   
   def flush_issues
-    setpairs = {
+    sets = {
       @key[:issue_pages] => @key[:page],
       @key[:problems] => @key[:problem],
     }
     self.flush_sets setpairs
   end
   
+  
   private
   
-  def flush_sets(setpairs)
-    setpairs.each do |container, memberset|
-      keys = R.smembers container
+  def flush_sets(sets)
+    setpairs.each do |superset, set_prefix|
+      keys = R.smembers superser
       keys.each do |k|
-        R.del memberset + ":#{k}"
+        R.del set_prefix + ":#{k}"
       end
-      R.del container
+      R.del superset
     end
   end
+  
 end
-
-
-
-
-
-
-
-
-
 
 
 
