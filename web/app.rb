@@ -96,6 +96,27 @@ get '/sites/add' do
 end
 
 
+post '/ajax/count/pages' do
+  @site = Sites.get(params[:site])
+  status 200
+  body @site.pages_with_brokens_count.to_s
+end
+
+
+post '/ajax/count/temp' do
+  @site = Sites.get(params[:site])
+  status 200
+  body @site.temp_blacklist_count.to_s
+end
+
+
+post '/ajax/count/blacklist' do
+  @site = Sites.get(params[:site])
+  status 200
+  body @site.blacklist_count.to_s
+end
+
+
 post '/sites/add' do
   site = Sites.create(:location => params[:location])
   if site.is_a? Sites

@@ -1,5 +1,5 @@
 - action = @context == :blacklist ? '/blacklist/premanent/remove' : '/blacklist/temp/remove'
-%form.littleForm.opacitize{:action => action, :method => 'post', :class => target}
+%form.littleForm.opacitize{:action => action, :method => 'post', :class => target, :id => target}
     %input{:type => 'hidden', :name => 'site', :value => site}
     %input{:type => 'hidden', :name => 'link', :value => link}
     %input.btn.btn-small.btn-success{:type => 'submit', :value => 'Whitelist'}

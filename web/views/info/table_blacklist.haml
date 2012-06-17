@@ -1,7 +1,7 @@
 - i = 0
 - @links.each do |link, pages|
     - i += 1
-    .blacklistBlock
+    .blacklistBlock{:class => "row-#{i}"}
         .row
             .targetable{:id => "row-#{i}"}
                 .span9
