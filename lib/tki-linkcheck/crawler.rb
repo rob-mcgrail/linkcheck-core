@@ -7,7 +7,7 @@ class Crawler
   def crawl
     LinkCache.flush # only cleared if not recently used
     pre_cleanup
-    Anemone.crawl(@site.location, :discard_page_bodies => true) do |anemone|
+    Anemone.crawl(@site.location, :discard_page_bodies => true, :delay => $options.page_delay) do |anemone|
       @site.log_crawl
       anemone.on_every_page do |page|
         check_links(page) if page.doc
