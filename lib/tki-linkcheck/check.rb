@@ -63,7 +63,7 @@ class Check
         when '302' # Should this be removed?
           nil
         when '303'
-          local_check :see_other
+          nil
         when '503'
           :unavailable
         else
