@@ -6,6 +6,10 @@ LinkCache.force_flush
 sites = Sites.all
 
 sites.each do |site|
-  Crawler.new(site).crawl
-  GC.start # haha nice try
+  begin
+    Crawler.new(site).crawl
+    GC.start # haha nice try
+  rescue Exception => e
+    puts e
+  end
 end

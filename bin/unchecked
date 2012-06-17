@@ -6,5 +6,10 @@ LinkCache.force_flush
 sites = Sites.partition_by_age[1]
 
 sites.each do |site|
-  Crawler.new(site).crawl
+  begin
+    Crawler.new(site).crawl
+    GC.start # haha nice try
+  rescue Exception => e
+    puts e
+  end
 end

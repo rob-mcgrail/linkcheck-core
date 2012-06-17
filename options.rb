@@ -15,5 +15,6 @@ $options.permanently_ignore << /^mailto:/ #mailto
 $options.permanently_ignore << /\);\s?$/ #href javascript
 $options.permanently_ignore << /\/(e|m|r)\// #legacy
 $options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibility|privacy)\// # footer
+$options.permanently_ignore << /\/wws\/arc\//
 $options.permanently_ignore << /javascript:toggle/
 $options.crawl_limit = 1500 # maximum limit of pages to crawl for one site... emergency protection against loops...
