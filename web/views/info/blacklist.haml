@@ -1,9 +1,9 @@
 %form.littleForm.opacitize.backlistManagement{:action => '/blacklist/temp', :method => 'post', :class => target, :id => '1' + target}
     %input{:type => 'hidden', :name => 'site', :value => site}
     %input{:type => 'hidden', :name => 'link', :value => link}
-    %input.btn.btn-small.btn-warning{:type => 'submit', :value => 'Ignore'}
+    %input.btn.btn-small{:type => 'submit', :value => 'Ignore'}
 
 %form.littleForm.opacitize.backlistManagement{:action => '/blacklist/permanently', :method => 'post', :class => target, :id => '2' + target}
     %input{:type => 'hidden', :name => 'site', :value => site}
     %input{:type => 'hidden', :name => 'link', :value => link}
-    %input.btn.btn-small.btn-danger{:type => 'submit', :value => 'Permanently ignore'}
+    %input.btn.btn-small{:type => 'submit', :value => 'Permanently ignore'}

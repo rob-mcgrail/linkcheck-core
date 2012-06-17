@@ -1,12 +1,28 @@
-.row
-    .span12
-        .row
+.navbar
+    .navbar-inner
+        .container
+            %a.brand{:href => '/'} Linkcheck
 
-            .title.span6
-                %h1
-                    != link_to('Linkcheck', '/')
-            - unless @admin
-                .span5.adminOptions
+            %ul.nav
+                %li.divider-vertical
+                %li
+                    != link_to('List of sites', '/')
+            %ul.nav.pull-right{:style => 'padding-right:3em;'}
+                %li.divider-vertical
+                %li
                     != link_to('Manage sites', '/sites/manage')
-                .span1.adminOptions
+                %li
                     != link_to('Admin', '/admin')
+
+//.row
+//    .span12
+//        .row
+
+//            .title.span6
+//                %h1
+//                    != link_to('Linkcheck', '/')
+//            - unless @admin
+//                .span5.adminOptions
+//                    != link_to('Manage sites', '/sites/manage')
+//                .span1.adminOptions
+//                    != link_to('Admin', '/admin')
