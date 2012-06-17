@@ -1,5 +1,9 @@
 REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError, Errno::ECONNREFUSED]
 
+# review these, and do sensible things for the respective errors.
+
+# don't retry bad requests, put in a queue for retry later
+
 class Check
   require 'uri'
   require 'net/http'
@@ -16,10 +20,15 @@ class Check
       validate_relative_anchor
     else
       if LinkCache.checked? @link
-        LinkCache.get @link
+        response = LinkCache.get @link
+        puts "Hitting cache #{response}"
+        response
       else
         response = validate_link
         LinkCache.add @link, response
+        sleep $options.check_delay
+        puts "Sleep - #{$options.check_delay}"
+        puts "Validating link #{response}"
         response
       end
     end
