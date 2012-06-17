@@ -18,52 +18,52 @@ class Site
 
 
   def add_broken(page, link, problem)
-    R.multi do
-      R.sadd @key[:pages], page
-      R.sadd @key[:page] + ":#{page}", link
-      R.sadd @key[:problems], problem.to_s
-      R.sadd @key[:problem] + ":#{problem}", link
-      R.incr @key[:broken_count]
+    $redis.multi do
+      $redis.sadd @key[:pages], page
+      $redis.sadd @key[:page] + ":#{page}", link
+      $redis.sadd @key[:problems], problem.to_s
+      $redis.sadd @key[:problem] + ":#{problem}", link
+      $redis.incr @key[:broken_count]
     end
   end
 
 
   def log_link(link)
-    R.incr @key[:check_count]
+    $redis.incr @key[:check_count]
     LinkCache.add link
   end
   
   
   def log_page(page)
-    R.incr @key[:page_count]
+    $redis.incr @key[:page_count]
   end
   
   
   def reset_counters
-    R.set @key[:page_count], 0
-    R.set @key[:check_count], 0
-    R.set @key[:broken_count], 0
+    $redis.set @key[:page_count], 0
+    $redis.set @key[:check_count], 0
+    $redis.set @key[:broken_count], 0
   end
   
   
   def flush_issues
-    sets = {
+    setpairs = {
       @key[:issue_pages] => @key[:page],
       @key[:problems] => @key[:problem],
     }
-    self.flush_sets setpairs
+    flush_sets setpairs
   end
   
   
   private
   
-  def flush_sets(sets)
+  def flush_sets(setpairs)
     setpairs.each do |superset, set_prefix|
-      keys = R.smembers superser
+      keys = $redis.smembers superset
       keys.each do |k|
-        R.del set_prefix + ":#{k}"
+        $redis.del set_prefix + ":#{k}"
       end
-      R.del superset
+      $redis.del superset
     end
   end
   
