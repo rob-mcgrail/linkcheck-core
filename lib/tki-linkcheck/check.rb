@@ -57,7 +57,7 @@ class Check
         when '403'
           :forbidden
         when '301'
-          local_check 2
+          local_check :moved_permanently
         when '302' # Should this be removed?
           nil
         when '303'
@@ -77,8 +77,7 @@ class Check
 
 
   def local_check(sym)
-    puts '!!!!!!!!!!!!!!!!!!!'
-    if @link =~ /Regexp.escape(@page.url.host)/
+    if /(#{Regexp.escape(@page.url.host)})/.match(@link)
       nil
     else
       sym

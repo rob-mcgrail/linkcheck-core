@@ -10,6 +10,13 @@ class TestCheck < MiniTest::Unit::TestCase
     @doc = OpenStruct.new
     @doc.url = URI('http://example.com/')
     @doc.doc = Nokogiri::HTML(File.new('./test/mocks/anchors.html'))
+    $redis = MockRedis.new
+    LinkCache.force_flush
+  end
+
+
+  def teardown
+    load './lib/tki-linkcheck/redis.rb'
   end
 
 
@@ -47,14 +54,14 @@ class TestCheck < MiniTest::Unit::TestCase
     stub_request(:get, "example.com/page3").to_return(:status => 403)
     assert_equal :forbidden, Check.new(@doc, 'http://example.com/page3').validate
 
-    stub_request(:get, "example.com/page4").to_return(:status => 301)
-    assert_equal :moved_permanently, Check.new(@doc, 'http://example.com/page4').validate
+    stub_request(:get, "anothersite.com/page4").to_return(:status => 301)
+    assert_equal :moved_permanently, Check.new(@doc, 'http://anothersite.com/page4').validate
 
-    stub_request(:get, "example.com/page5").to_return(:status => 302)
-    assert_nil Check.new(@doc, 'http://example.com/page5').validate
+    stub_request(:get, "anothersite.com/page5").to_return(:status => 302)
+    assert_nil Check.new(@doc, 'http://anothersite.com/page5').validate
 
-    stub_request(:get, "example.com/page6").to_return(:status => 303)
-    assert_equal :see_other, Check.new(@doc, 'http://example.com/page6').validate
+    stub_request(:get, "anothersite.com/page6").to_return(:status => 303)
+    assert_equal :see_other, Check.new(@doc, 'http://anothersite.com/page6').validate
 
     stub_request(:get, "example.com/page7").to_return(:status => 503)
     assert_equal :unavailable, Check.new(@doc, 'http://example.com/page7').validate
@@ -75,15 +82,27 @@ class TestCheck < MiniTest::Unit::TestCase
     assert_nil Check.new(@doc, 'http://example.com/other/page1').validate
 
     stub_request(:get, "example.com/other/page2").to_return(:status => 303)
-    assert_equal :see_other, Check.new(@doc, 'http://example.com/other/page2').validate
+    assert_nil Check.new(@doc, 'http://example.com/other/page2').validate
 
     stub_request(:get, "example.com/other/page2").to_return(:status => 200)
-    assert_equal :see_other, Check.new(@doc, 'http://example.com/other/page2').validate
+    assert_nil Check.new(@doc, 'http://example.com/other/page2').validate
   end
 
 
   def test_invalid_uris_return_correct_symbol
     assert_equal :ignored_for_scheme, Check.new(@doc, 'some/thing').validate
     assert_equal :ignored_for_uri_class, Check.new(@doc, 'http:// example.com').validate
+  end
+
+
+  def test_local_redirects_ignored
+    stub_request(:get, "example.com/page99").to_return(:status => 301)
+    assert_nil Check.new(@doc, 'http://example.com/page99').validate
+
+    stub_request(:get, "example.com/page89").to_return(:status => 302)
+    assert_nil Check.new(@doc, 'http://example.com/page89').validate
+
+    stub_request(:get, "example.com/page79").to_return(:status => 303)
+    assert_nil Check.new(@doc, 'http://example.com/page79').validate
   end
 end
