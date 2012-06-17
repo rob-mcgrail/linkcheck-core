@@ -30,6 +30,8 @@ class Check
         if $options.checked_classes.member? uri.class
           response = Net::HTTP.get_response(uri)
           case response.code
+          when '200'
+            nil
           when '404'
             :not_found
           when '403'
@@ -43,7 +45,7 @@ class Check
           when '503'
             :unavailable
           else
-            nil
+            :unknown
           end
         end
       rescue URI::InvalidURIError

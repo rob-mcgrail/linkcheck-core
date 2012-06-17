@@ -58,6 +58,12 @@ class TestCheck < MiniTest::Unit::TestCase
     
     stub_request(:get, "example.com/page").to_return(:status => 503)
     assert_equal :unavailable, Check.validate(@doc, 'http://example.com/page')
+    
+    stub_request(:get, "example.com/page").to_return(:status => 500)
+    assert_equal :unknown, Check.validate(@doc, 'http://example.com/page')
+    
+    stub_request(:get, "example.com/page").to_return(:status => 401)
+    assert_equal :unknown, Check.validate(@doc, 'http://example.com/page')
   end
   
   
@@ -66,6 +72,6 @@ class TestCheck < MiniTest::Unit::TestCase
     assert_equal :invalid, Check.validate(@doc, 'http:// example.com')
     assert_equal :invalid, Check.validate(@doc, '$')
     assert_equal :invalid, Check.validate(@doc, '')
-    assert_equal :invalid, Check.validate(@doc, 'git://example.com')     
+    assert_equal :invalid, Check.validate(@doc, 'git://example.com')
   end
 end
