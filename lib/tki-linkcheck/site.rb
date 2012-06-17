@@ -245,31 +245,23 @@ class Sites
 
 
   def broken_links_count
-    s = $redis.get @key[:broken_count]
-    if s
-      s.to_i
-    else
-      nil
-    end
+    sanitized_count $redis.get @key[:broken_count]
   end
 
 
   def pages_checked_count
-    s = $redis.get @key[:page_count]
-    puts s
-    s
-    if s
-      s.to_i
-    else
-      nil
-    end
+    sanitized_count $redis.get @key[:page_count]
   end
 
 
   def links_checked_count
-    s = $redis.get @key[:check_count]
-    if s
-      s.to_i
+    sanitized_count $redis.get @key[:check_count]
+  end
+
+
+  def sanitized_count(v)
+    if v
+      v.to_i
     else
       nil
     end

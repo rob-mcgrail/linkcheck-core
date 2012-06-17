@@ -19,6 +19,7 @@ class Crawler
       :threads => 1,
     }
     pre_cleanup
+
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
@@ -26,13 +27,17 @@ class Crawler
         anemone.on_every_page do |page|
           check_links(page) if page.doc
           @site.log_page page.url
+
           LoopTrap.incr
           if LoopTrap.triggered?
             throw :looping
           end
+
         end
+
       end
     end
+
     post_cleanup
   end
 
