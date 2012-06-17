@@ -24,11 +24,16 @@ end
 
 
 helpers do
-  # In development
-  def pdf(page, destination)
-    # echo "<b>Hello</b> World!" | wkhtmltopdf - foo.pdf --user-style-sheet /url/css.css
-    location = params[:location]
-    str = "#{settings.pdf} #{request.host}:#{request.port}#{page} #{settings.public_folder}/pdf#{destination}"
+  def pdf(location, destination)
+    @context = :pages
+    @site = Sites.get(location)
+    @problems = @site.pages_by_link_by_problem
+
+    tmpfile = Tempfile.new(['pdf-source', '.html'])
+    tmpfile.write(haml :info_broken)
+
+    str = "#{settings.pdf} #{tmpfile.path} #{settings.public_folder}/pdf#{destination} --user-style-sheet #{settings.public_folder}/css/export.css"
+
     system str
     "/pdf#{destination}"
   end
@@ -107,9 +112,10 @@ get '/summary_report.csv' do
   [200, {'Content-Type' => 'text/csv'}, Sites.summary_report]
 end
 
+
 get '/site/:location/pdf' do
-  location = params[:location]
-  @pdf_url = pdf("/site/#{location}", "/#{Time.now.to_i}.pdf")
+  location = params[:location].from_slug
+  @pdf_url = pdf(location, "/#{Time.now.to_i}.pdf")
   redirect @pdf_url
 end
 
