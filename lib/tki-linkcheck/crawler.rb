@@ -19,7 +19,7 @@ class Crawler
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
-        anemone.skip_links_like /%23/ # anemone was confused by links like: /News#123
+        anemone.skip_links_like /%23/
         anemone.on_every_page do |page|
           check_links(page) if page.doc
           @site.log_page page.url
