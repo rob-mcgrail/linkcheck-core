@@ -10,7 +10,6 @@ class SSOAuth
         end
       end
     end
-    puts h
     h
   end
 end
