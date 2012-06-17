@@ -24,6 +24,7 @@ class Crawler
     links.each do |link|
       unless LinkCache.checked? link
         problem = Check.validate(page, link)
+        puts problem
         if problem
           @site.add_broken page.url, link, problem
         end
@@ -52,6 +53,7 @@ class Crawler
   
   def pre_cleanup
     @site.reset_counters
+    @site.flush_temp_blacklist
     @site.flush_issues
     LinkCache.flush # this doesn't belong here really
   end

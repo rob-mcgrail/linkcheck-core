@@ -101,6 +101,59 @@ class TestSite < MiniTest::Unit::TestCase
   end
   
   
+  def test_add_to_blacklist_adds_to_blacklist
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
+    @site.blacklist 'http://b.com'
+    set = $redis.sdiff "#{$options.global_prefix}:#{@site.location}:page:http://example.com/a",
+                       "#{$options.global_prefix}:#{@site.location}:blacklist"
+    refute_includes set, 'http://b.com'
+  end
+  
+  
+  def test_add_to_temp_blacklist_adds_to_blacklist
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
+    @site.temp_blacklist 'http://b.com'
+    set = $redis.sdiff "#{$options.global_prefix}:#{@site.location}:page:http://example.com/a",
+                       "#{$options.global_prefix}:#{@site.location}:blacklist:temp"
+    refute_includes set, 'http://b.com'
+  end
+  
+  
+  def test_flush_temp_blacklist_flushes_temp_blacklist
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
+    @site.temp_blacklist 'http://b.com'    
+    @site.flush_temp_blacklist
+    set = $redis.sdiff "#{$options.global_prefix}:#{@site.location}:page:http://example.com/a",
+                       "#{$options.global_prefix}:#{@site.location}:blacklist:temp"
+    assert_includes set, 'http://b.com' 
+  end
+  
+  
+  def test_flush_temp_blacklist_doesnt_flush_blacklist
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
+    @site.blacklist 'http://b.com'
+    @site.flush_temp_blacklist
+    set = $redis.sdiff "#{$options.global_prefix}:#{@site.location}:page:http://example.com/a",
+                       "#{$options.global_prefix}:#{@site.location}:blacklist"
+    refute_includes set, 'http://b.com'  
+  end
+  
+  
+  def test_remove_from_blacklist_removes_link_from_blacklist
+    @site.add_broken('http://example.com/a', 'http://a.com', :problem1)
+    @site.add_broken('http://example.com/a', 'http://b.com', :problem1)
+    @site.blacklist 'http://b.com'
+    @site.remove_from_blacklist 'http://b.com'
+    set = $redis.sdiff "#{$options.global_prefix}:#{@site.location}:page:http://example.com/a",
+                       "#{$options.global_prefix}:#{@site.location}:blacklist:temp"
+    assert_includes set, 'http://b.com' 
+  end
+  
+  
   def test_counters_resetable
     @site.log_link 'http://a.com'
     @site.log_link 'http://b.com'   
