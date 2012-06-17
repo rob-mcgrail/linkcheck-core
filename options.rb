@@ -9,5 +9,5 @@ $options.checked_classes = [URI::HTTP, URI::HTTPS]
 $options.linkcache_time = 3600
 $options.page_delay = 1
 $options.retry_count = 2
-$options.permanently_ignore = [/Search=true&filter\[\]=/, /^mailto:/]
+$options.permanently_ignore = [/Search=true&filter\[\]=/, /^mailto:/, /\);\s?$/]
 $options.crawl_limit = 1500 # maximum limit of pages to crawl for one site... emergency protection against loops...
