@@ -3,15 +3,21 @@ class Check
   require 'net/http'
   require 'net/https'
 
-  def validate(page, link)
-    if link =~ /^#{Regexp.escape(page.url.to_s.gsub(/\/$/,''))}\/?#[^!]/
-      validate_relative_anchor(page, link)
+  def initialize(page_, link_)
+    @page = page_
+    @link = link_
+  end
+
+
+  def validate
+    if @link =~ /^#{Regexp.escape(@page.url.to_s.gsub(/\/$/,''))}\/?#[^!]/
+      validate_relative_anchor
     else
-      if LinkCache.checked? link
-        LinkCache.get link
+      if LinkCache.checked? @link
+        LinkCache.get @link
       else
-        response = validate_link(link)
-        LinkCache.add link, response
+        response = validate_link
+        LinkCache.add @link, response
         response
       end
     end
@@ -20,9 +26,9 @@ class Check
 
   private
 
-  def validate_relative_anchor(page, link)
-    link.gsub!(/^.+#/, '')
-    unless page.doc.at_xpath("//a[@name='#{link}']", "//*[@id='#{link}']")
+  def validate_relative_anchor
+    @link.gsub!(/^.+#/, '')
+    unless @page.doc.at_xpath("//a[@name='#{@link}']", "//*[@id='#{@link}']")
       :bad_anchor
     else
       nil
@@ -30,10 +36,10 @@ class Check
   end
 
 
-  def validate_link(link)
-    if link.gsub(' ', '%20') =~ URI::regexp($options.valid_schemes)
+  def validate_link
+    if @link.gsub(' ', '%20') =~ URI::regexp($options.valid_schemes)
       begin
-        uri = URI.parse(link.gsub(' ', '%20'))
+        uri = URI.parse(@link.gsub(' ', '%20'))
       rescue URI::InvalidURIError
         :invalid
       end
@@ -51,11 +57,11 @@ class Check
         when '403'
           :forbidden
         when '301'
-          :moved_permanently
+          local_check :moved_permanently
         when '302' # Should this be removed?
           nil
         when '303'
-          :see_other
+          local_check :see_other
         when '503'
           :unavailable
         else
@@ -66,6 +72,16 @@ class Check
       end
     else
       :ignored_for_scheme
+    end
+  end
+
+
+  def local_check(sym)
+    domain = @page.url.match(/\/\/(.[^\/]+)/)
+    if domain =~ @link
+      nil
+    else
+      sym
     end
   end
 
