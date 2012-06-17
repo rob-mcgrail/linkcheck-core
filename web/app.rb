@@ -100,7 +100,7 @@ end
 
 get '/site/:location/pdf' do
   location = params[:location]
-  @pdf_url = pdf("/site/#{location}", "/testing.pdf")
+  @pdf_url = pdf("/site/#{location}", "/#{Time.now.to_i}.pdf")
   redirect @pdf_url
 end
 
