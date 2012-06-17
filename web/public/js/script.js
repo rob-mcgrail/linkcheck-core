@@ -17,6 +17,8 @@ $(".targetable").hover(
   }
 );
 
+// Submit forms with class blacklistManagement without page-refresh
+
 $("form.backlistManagement").submit(function(event) {
   event.preventDefault();
   var $form = $( this ),

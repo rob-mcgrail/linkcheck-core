@@ -14,13 +14,6 @@ a {
   word-wrap: break-word;
 }
 
-
-.pdf {
-background:url(/img/adobe-pdf-icon.gif) no-repeat 100px 80px;
-text-indent:300px;
-display:block;
-}
-
 .alert {
   margin-top: 5px;
   margin-bottom: 5px;
