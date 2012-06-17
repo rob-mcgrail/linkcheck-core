@@ -38,8 +38,9 @@ class Crawler
         puts problem # remove
         if problem
           @site.add_broken page.url, link, problem
+        else
+          LinkCache.add link
         end
-        LinkCache.add link
         @site.log_link link
       end
     end

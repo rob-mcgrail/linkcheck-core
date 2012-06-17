@@ -8,7 +8,7 @@ class LinkCache
 
 
   def self.add(link)
-    if link =~ /^http:/
+    if link =~ /^http|^https/
       @@time = Time.now
       $redis.sadd @@key, link
     end
