@@ -22,7 +22,6 @@ class Crawler
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
-        LinkCache.set_context location
         anemone.skip_links_like /%23/, /\/index\.php\//, /\.#{STATIC_EXTENSIONS.join('|')}$/
         anemone.on_every_page do |page|
           if LoopTrap.triggered?
@@ -33,6 +32,7 @@ class Crawler
           puts "On page -> #{page.url}"
 
           check_links(page) if page.doc
+
           @site.log_page page.url
           LoopTrap.incr
         end

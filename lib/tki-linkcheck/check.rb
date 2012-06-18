@@ -18,14 +18,10 @@ class Check
       cache_response = LinkCache.get @link # "" for fine, sym for problem, nil for uncached
       if cache_response
         puts "Hitting cache #{cache_response}"
-        if cache_response == ""
-          nil
-        else
-          cache_response.to_sym
-        end
+        parse_cache cache_response
       else
         response = validate_link
-        LinkCache.add @link, response#, /^#{Regexp.escape(@page.url.to_s)}/.match(@link)
+        LinkCache.add @link, response
         sleep $options.check_delay
         puts "Sleep - #{$options.check_delay}"
         puts "Validating link #{response}"
@@ -36,6 +32,15 @@ class Check
 
 
   private
+
+  def parse_cache(response)
+    if response == ""
+      nil
+    else
+      response.to_sym
+    end
+  end
+
 
   def validate_relative_anchor
     @link.gsub!(/^.+#/, '')
