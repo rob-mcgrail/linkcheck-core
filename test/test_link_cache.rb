@@ -17,25 +17,19 @@ class TestLinkCache < MiniTest::Unit::TestCase
 
   def test_adding_link_to_cache
     LinkCache.add 'http://a.com', nil
-    assert LinkCache.checked? 'http://a.com'
-  end
-
-
-  def test_non_urls_ignored
-    LinkCache.add 'abc', nil
-    refute LinkCache.checked? 'abc'
+    assert LinkCache.get 'http://a.com'
   end
 
 
   def test_responses_saved
     LinkCache.add 'http://thing.com', :not_found
-    assert_equal :not_found, LinkCache.get('http://thing.com')
+    assert_equal "not_found", LinkCache.get('http://thing.com')
   end
 
 
-  def test_nil_responses_transported
+  def test_no_problem_responses_return_empty_string
     LinkCache.add 'http://thing.com', nil
-    refute LinkCache.get('http://thing.com')
+    assert_equal "", LinkCache.get('http://thing.com')
   end
 
 
@@ -43,35 +37,15 @@ class TestLinkCache < MiniTest::Unit::TestCase
     LinkCache.add 'http://thing.com', nil
     LinkCache.add 'http://thing.com', nil
     LinkCache.add 'http://thing.com', nil
-    assert_equal 1, $redis.scard(LinkCache.send(:class_variable_get, :@@keys)[:checked])
+    assert_equal 1, $redis.keys("#{$options.global_prefix}:response:*").length
   end
 
 
-  def test_cache_is_flushable
-    $options.linkcache_time = 0
-    LinkCache.add 'http://thing.com', nil
-    LinkCache.add 'http://thing.com/a', nil
-    assert LinkCache.checked? 'http://thing.com'
-    assert LinkCache.checked? 'http://thing.com/a'
-    LinkCache.flush
-    refute LinkCache.checked? 'http://thing.com'
-    refute LinkCache.checked? 'http://thing.com/a'
-  end
-
-
-  def test_cache_is_not_flushable_if_recently_active
+  def test_forced_flush_deleted_cache_keys
     $options.linkcache_time = 60
     LinkCache.add 'http://thing.com', nil
-    assert LinkCache.checked? 'http://thing.com'
-    LinkCache.flush_if_stale
-    assert LinkCache.checked? 'http://thing.com'
-  end
-
-
-  def test_forced_flush_ignores_recency
-    $options.linkcache_time = 60
-    LinkCache.add 'http://thing.com', nil
+    assert LinkCache.get 'http://thing.com'
     LinkCache.flush
-    refute LinkCache.checked? 'http://thing.com'
+    assert_nil LinkCache.get 'http://thing.com'
   end
 end
