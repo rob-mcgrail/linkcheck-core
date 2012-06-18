@@ -17,7 +17,6 @@ class LinkCache
 
   def self.flush
     cache_keys = $redis.keys @@keys[:response] + "*"
-    puts cache_keys
     cache_keys.each do |k|
       $redis.del k
     end
