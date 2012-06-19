@@ -31,9 +31,9 @@ helpers do
     @problems = @site.pages_by_link_by_problem
 
     tmpfile = Tempfile.new(['pdf-source', '.html'])
-    tmpfile.write(haml :info_broken)
+    tmpfile.write(haml :'pdf/pdf', :layout => false)
 
-    command = "#{settings.pdf} #{tmpfile.path} - --user-style-sheet #{settings.public_folder}/css/pdf.css -q"
+    command = "#{settings.pdf} -q #{tmpfile.path} - --user-style-sheet #{settings.public_folder}/css/pdf.css"
 
     pdf, err = Open3.popen3(command) do |stdin, stdout, stderr|
       stdout.binmode
@@ -43,6 +43,14 @@ helpers do
   end
 end
 
+get '/test/:location/?' do
+  location = params[:location].from_slug
+  title location
+  @context = :pages
+  @site = Sites.get(location)
+  @problems = @site.pages_by_link_by_problem
+  haml :'pdf/pdf'
+end
 
 get '/?' do
   title 'sites'
