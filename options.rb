@@ -18,4 +18,5 @@ $options.permanently_ignore << /javascript:/ #href javascript
 $options.permanently_ignore << /\/(e|m|r)\// #legacy
 $options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibility|privacy)(\/|$)/ #footer
 $options.permanently_ignore << /\/wws\/arc\// # mailinglist archives
+$options.permanently_ignore << /\/sympa\/archive\// # mailinglist archives
 $options.crawl_limit = 2000
