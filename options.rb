@@ -10,6 +10,7 @@ $options.expiry = 691_200
 $options.crawl_delay = 0.5
 $options.check_delay = 0.5
 $options.retry_count = 2
+
 $options.permanently_ignore = [ ]
 $options.permanently_ignore << /Search=true&filter\[\]=/ #search
 $options.permanently_ignore << /^mailto:/ #mailto
