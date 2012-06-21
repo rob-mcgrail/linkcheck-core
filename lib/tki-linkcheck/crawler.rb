@@ -22,8 +22,8 @@ class Crawler
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
-        anemone.skip_links_like /%23/, /\/index\.php\//, /\.#{STATIC_EXTENSIONS.join('|')}$/
-
+        ignore_patterns = /%23/, /\/index\.php\//, /\.#{STATIC_EXTENSIONS.join('|')}$/, *$options.permanently_ignore
+        anemone.skip_links_like ignore_patterns
         anemone.on_every_page do |page|
           if LoopTrap.triggered?
             throw :looping
@@ -39,7 +39,6 @@ class Crawler
         end
       end
     end
-
     post_cleanup
   end
 
