@@ -38,6 +38,16 @@ class TestLinkExtract < MiniTest::Unit::TestCase
   end
 
 
+  def test_permanently_ignored_links_ignored
+    a = LinkExtract << @page
+    assert_equal 10, a.length
+    $options.permanently_ignore << /relative/
+    a = LinkExtract << @page
+    assert_equal 8, a.length
+    $options.permanently_ignore.pop
+  end
+
+
   def test_extracted_links_are_absolute
     a = LinkExtract << @page
     assert_includes a, "http://example.com/relative_url/1"
