@@ -172,6 +172,13 @@ class Sites
   end
 
 
+  def remove_from_blacklist_silently(link)
+    if $redis.sismember(@key[:blacklist], link)
+      $redis.srem @key[:blacklist], link
+    end
+  end
+
+
   def remove_from_temp_blacklist(link)
     if $redis.sismember(@key[:temp_blacklist], link)
       $redis.srem @key[:temp_blacklist], link
@@ -233,13 +240,13 @@ class Sites
     $redis.smembers(@key[:problems]).each do |problem|
       h[problem] = {}
       # flush tmp keys
-      $redis.del 'tmp:exclude:#{@location}', 'tmp:cleaned:#{@location}'
+      $redis.del "tmp:exclude:#{@location}", "tmp:cleaned:#{@location}"
       # get combined blacklist
-      $redis.sunionstore 'tmp:exclude:#{@location}', @key[:blacklist], @key[:temp_blacklist]
+      $redis.sunionstore "tmp:exclude:#{@location}", @key[:blacklist], @key[:temp_blacklist]
       # store links not in blacklist
-      $redis.sdiffstore 'tmp:cleaned:#{@location}', "#{@key[:problem]}#{problem}", 'tmp:exclude:#{@location}'
-      if $redis.scard('tmp:cleaned:#{@location}') > 0
-        $redis.smembers('tmp:cleaned:#{@location}').each do |link|
+      $redis.sdiffstore "tmp:cleaned:#{@location}", "#{@key[:problem]}#{problem}", "tmp:exclude:#{@location}"
+      if $redis.scard("tmp:cleaned:#{@location}") > 0
+        $redis.smembers("tmp:cleaned:#{@location}").each do |link|
           h[problem][link] = $redis.smembers(@key[:link] + link)
         end
       end
@@ -324,8 +331,8 @@ class Sites
   def purge_orphaned_blacklist_items
     $redis.smembers(@key[:blacklist]).each do |link|
       i = $redis.scard @key[:link] + link
-      if i == 0
-        self.remove_from_blacklist link
+      unless i > 0
+        self.remove_from_blacklist_silently link
       end
     end
   end
