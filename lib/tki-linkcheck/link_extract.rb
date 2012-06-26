@@ -21,7 +21,8 @@ class LinkExtract
       a.delete_if do |link|
         outcome = nil
         $options.permanently_ignore.each do |pattern|
-          outcome = pattern.match(link)
+          match = pattern.match(link)
+          outcome = match if match
         end
         outcome
       end
