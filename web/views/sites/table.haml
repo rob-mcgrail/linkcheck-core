@@ -25,8 +25,12 @@
                             != site.last_checked.to_time
 
                 %td.span2
-                    %span.badge.badge-error
-                        != site.broken_links_count || '0'
+                    - if site.broken_links_count < 1 || nil
+                        %span.badge.badge-success
+                            0
+                    - else
+                        %span.badge.badge-error
+                            != site.broken_links_count
                 %td.span2
                     %span.badge.badge-info
                         != site.pages_checked_count || '0'
