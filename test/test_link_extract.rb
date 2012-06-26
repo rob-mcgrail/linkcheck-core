@@ -12,6 +12,11 @@ class TestLinkExtract < MiniTest::Unit::TestCase
   end
 
 
+  def teardown
+
+  end
+
+
   def test_returns_array
     a = LinkExtract << @page
     assert_kind_of Array, a
@@ -44,7 +49,9 @@ class TestLinkExtract < MiniTest::Unit::TestCase
     $options.permanently_ignore << /relative/
     a = LinkExtract << @page
     assert_equal 8, a.length
-    $options.permanently_ignore.pop
+    refute_includes a, "http://example.com/relative_url/1"
+    refute_includes a, "http://example.com/relative_url/2"
+    load './options.rb'
   end
 
 
