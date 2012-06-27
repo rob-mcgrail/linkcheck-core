@@ -173,9 +173,7 @@ class Sites
 
 
   def remove_from_blacklist_silently(link)
-    if $redis.sismember(@key[:blacklist], link)
-      $redis.srem @key[:blacklist], link
-    end
+    $redis.srem @key[:blacklist], link
   end
 
 
@@ -306,24 +304,9 @@ class Sites
   end
 
 
-  private
-
-
-  def flush_sets(setpairs)
-    setpairs.each do |superset, set_prefix|
-      keys = $redis.smembers superset
-      keys.each do |k|
-        $redis.del set_prefix + k
-      end
-      $redis.del superset
-    end
-  end
-
-
   def self.purge_orphaned_blacklist_items
-    Sites.all.each do |location|
-      @site = Sites.new(location)
-      @site.purge_orphaned_blacklist_items
+    Sites.all.each do |site|
+      site.purge_orphaned_blacklist_items
     end
   end
 
@@ -334,6 +317,20 @@ class Sites
       unless i > 0
         self.remove_from_blacklist_silently link
       end
+    end
+  end
+
+
+  private
+
+
+  def flush_sets(setpairs)
+    setpairs.each do |superset, set_prefix|
+      keys = $redis.smembers superset
+      keys.each do |k|
+        $redis.del set_prefix + k
+      end
+      $redis.del superset
     end
   end
 end
