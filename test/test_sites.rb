@@ -288,17 +288,26 @@ class TestSite < MiniTest::Unit::TestCase
 
     structure = @site.pages_by_blacklisted_link
     assert_equal ['http://example.com/a'], structure['http://a.com']
+    assert_equal ['http://example.com/a'], structure['http://b.com']
+    assert_equal ['http://example.com/a'], structure['http://c.com']
 
     # simulating new crawl
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
+
+    assert_equal ['http://example.com/a'], structure['http://a.com']
+    assert_equal ['http://example.com/a'], structure['http://b.com']
+    assert_equal ['http://example.com/a'], structure['http://c.com']
     @site.add_broken('http://example.com/a', 'http://c.com', :problem1)
-    @site.purge_orphaned_blacklist_items
+
+    # Purging
+    Sites.purge_orphaned_blacklist_items
 
     structure = @site.pages_by_blacklisted_link
-    assert_nil structure['http://a.com'].first
-    assert_nil structure['http://b.com'].first
+
+    assert_equal nil, structure['http://a.com']
+    assert_equal nil, structure['http://b.com']
 
     assert_equal ['http://example.com/a'], structure['http://c.com']
   end
