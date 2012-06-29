@@ -62,6 +62,7 @@ class Crawler
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
+    @site.not_reported
     LoopTrap.reset
   end
 

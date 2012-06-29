@@ -4,9 +4,11 @@
             %th
                 Site
             %th
+                Done
+            %th
                 Last checked
             %th
-                Broken
+                Problems
             %th
                 Pages
             %th
@@ -14,12 +16,16 @@
     %tbody
         - sites.each do |site|
             %tr.siteInfo
-                %td.span7
+                %td.span6
                     %a{:href => "/site/#{site.location.to_slug}"}
                         %strong.subtleLink.siteTitle
                             != site.location
+                %td.span2
+                    - if site.reported?
+                        %span.badge.badge-success
+                            %i.icon-ok.icon-white
 
-                %td.span4
+                %td.span3
                     - if site.last_checked
                         %span.muted.smaller
                             != site.last_checked.to_time
