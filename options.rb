@@ -22,6 +22,6 @@ $options.permanently_ignore << /Search=true&filter\[\]=/ #search
 $options.permanently_ignore << /mailto:/ #mailto
 $options.permanently_ignore << /\);\s?$/ #href javascript
 $options.permanently_ignore << /javascript:/ #href javascript
-$options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibility|privacy)(\/|$)/ #footer
+$options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibility|privacy|feedback)(\/|$)/ #footer
 $options.permanently_ignore << /wws\/arc\// # mailinglist archives
 $options.permanently_ignore << /sympa\/archive\// # mailinglist archives
