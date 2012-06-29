@@ -190,9 +190,23 @@ post '/blacklist/premanent/remove/?' do
 end
 
 
-post '/blacklist/temp/remove?' do
+post '/blacklist/temp/remove/?' do
   location = params[:site]
   link = params[:link]
   Sites.get(location).remove_from_temp_blacklist link
   redirect "/site/#{location.to_slug}/blacklist/temp"
+end
+
+
+post '/sites/reported/?' do
+  location = params[:site]
+  change = params[:change]
+  if change == 'add'
+    Sites.get(location).is_reported
+  elsif change == 'remove'
+    Sites.get(location).not_reported
+  else
+    flash[:error] = "There was an error changing site status."
+  end
+  redirect "/site/#{location.to_slug}"
 end

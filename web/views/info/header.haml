@@ -4,6 +4,16 @@
             != @site.location
             %small
                 != @site.last_checked.to_time if @site.last_checked
+
+            %form.pull-right{:action => '/sites/reported', :method => 'post', :style => 'margin-right: 5px;'}
+                %input{:type => 'hidden', :name => 'site', :value => @site.location}
+                    - if @site.reported?
+                        %input{:type => 'hidden', :name => 'change', :value => 'remove'}
+                        %input.btn.pull-right{:type => 'submit', :value => '✘ Mark todo'}
+                    - else
+                        %input{:type => 'hidden', :name => 'change', :value => 'add'}
+                        %input.btn.pull-right{:type => 'submit', :value => '✔ Mark done'}
+
             %a.btn.pull-right{:href => "/site/#{@site.location.to_slug}/pdf", :style => 'margin-right: 5px;'}
                 %i.icon-download
                 PDF

@@ -106,12 +106,28 @@ class Sites
       :page_count => "#{@prefix}:count:pages",
       :broken_count => "#{@prefix}:count:broken",
       :check_count => "#{@prefix}:count:checked",
+      :reported => "#{@prefix}:reported"
     }
   end
 
 
   def method_missing(m, *args, &block)
     nil
+  end
+
+
+  def is_reported
+    $redis.set @key[:reported], Time.now.to_i
+  end
+
+
+  def not_reported
+    $redis.del @key[:reported]
+  end
+
+
+  def reported?
+    $redis.exists @key[:reported]
   end
 
 
