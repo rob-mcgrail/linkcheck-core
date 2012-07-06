@@ -22,7 +22,7 @@ class LinkExtract
         outcome = nil
         $options.permanently_ignore.each do |pattern|
           match = pattern.match(link)
-          outcome = true if match
+          outcome = match if match
         end
         outcome
       end

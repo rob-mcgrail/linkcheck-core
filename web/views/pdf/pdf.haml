@@ -1,0 +1,21 @@
+%body
+    #container
+        %h1.siteListHeader
+            != "Link report for " + @site.location
+    - i = 0
+    - @problems.each do |problem, hash_of_links|
+        - unless hash_of_links.empty?
+            %h2.problemTitle
+                != "Problem type: " + problem.gsub('_', ' ').proper_case
+            - hash_of_links.each do |link, array|
+                - unless array.empty?
+                    .linkBlock
+                        %h4.linkTitle
+                            != link_to(link, link, :target => 'none')
+                        - s = "Appears on #{array.length} page"
+                        .appears
+                            != array.length == 1 ? s : s.plural
+                        %ul.unstyled
+                            - array.each do |link|
+                                %li.link
+                                    != link_to(link, link, :target => 'none')

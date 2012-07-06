@@ -5,14 +5,23 @@
             %li.active
                 %a{:href => '#recent', :data => {:toggle => 'tab'}}
                     != "Checked this week" + "<span class='badge tabBadge'>#{@recent.length}</span>"
-            %li   
+            %li
                 - unless @old.length == 0
                     %a{:href => '#old', :data => {:toggle => 'tab'}}
                         != "Others" + "<span class='badge tabBadge'>#{@old.length}</span>"
-        
+
         .tab-content
             .tab-pane.active#recent
-                != haml :'sites/table', :locals => { :sites => @recent }
-                    
+                - if @recent.length > 0
+                    != haml :'sites/table', :locals => { :sites => @recent }
+                - else
+                    .alert{:style => 'max-width:600px;'}
+                        %p
+                            %strong
+                                No sites have been checked within the last 7 days!
+                        %p
+                            This means there is probably a problem...
+
+
             .tab-pane#old
                 != haml :'sites/table', :locals => { :sites => @old }

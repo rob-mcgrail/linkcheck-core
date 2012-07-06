@@ -4,6 +4,12 @@
    Author: robert.mcgrail@cwa.co.nz
    ========================================================================== */
 
+h2 small {font-size: 14px;}
+
+h2 {font-size: 18px;}
+
+h3 {font-size: 16px;}
+
 a {
   word-wrap: break-word;
 }
@@ -11,10 +17,6 @@ a {
 .alert {
   margin-top: 5px;
   margin-bottom: 5px;
-}
-
-.flashes {
-  min-height: 60px;
 }
 
 .tabBadge {
@@ -68,8 +70,21 @@ a {
   padding-bottom: 10px;
 }
 
-.linkTitle {
-  font-size: 100%;
+.spaced {
+  margin-bottom: 35px;
+}
+
+.linkTitle > a {
+  font-size: 110%;
+  font-weight: normal;
+  padding: 4px;
+  color: #333;
+  background-color: #FFC4C4;
+}
+
+.link > a {
+/*  color: #001696;*/
+  text-decoration: underline;
 }
 
 
@@ -98,7 +113,11 @@ li.link {
 
 .siteListTableHeader {
   color: gray;
-  font-size: 80%;
+  font-size: 93%;
+}
+
+.siteTitle {
+  font-size: 115%;
 }
 
 .blacklistBlock {

@@ -1,9 +1,5 @@
 REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError]
 
-# review these, and do sensible things for the respective errors.
-
-# don't retry bad requests, put in a queue for retry later
-
 class Check
   require 'uri'
   require 'net/http'
@@ -19,10 +15,10 @@ class Check
     if @link =~ /^#{Regexp.escape(@page.url.to_s.gsub(/\/$/,''))}\/?#[^!]/
       validate_relative_anchor
     else
-      if LinkCache.checked? @link
-        response = LinkCache.get @link
-        puts "Hitting cache #{response}"
-        response
+      cache_response = LinkCache.get @link # "" for fine, sym for problem, nil for uncached
+      if cache_response
+        puts "Hitting cache #{cache_response}"
+        parse_cache cache_response
       else
         response = validate_link
         LinkCache.add @link, response
@@ -36,6 +32,16 @@ class Check
 
 
   private
+
+
+  def parse_cache(response)
+    if response == ""
+      nil
+    else
+      response.to_sym
+    end
+  end
+
 
   def validate_relative_anchor
     @link.gsub!(/^.+#/, '')

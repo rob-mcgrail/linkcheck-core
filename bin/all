@@ -3,11 +3,10 @@ require './lib/tki-linkcheck'
 
 sites = Sites.all
 
+# Changing to run each check as a seeperate instance of
+# MRI in the hope that this will stop memory creeping up
+# during week long crawls
+
 sites.each do |site|
-  begin
-    Crawler.new(site).crawl
-    GC.start # haha nice try
-  rescue Exception => e
-    puts e
-  end
+  system("bundle exec ruby bin/run #{site.location}")
 end

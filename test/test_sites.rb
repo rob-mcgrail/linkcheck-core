@@ -288,18 +288,52 @@ class TestSite < MiniTest::Unit::TestCase
 
     structure = @site.pages_by_blacklisted_link
     assert_equal ['http://example.com/a'], structure['http://a.com']
+    assert_equal ['http://example.com/a'], structure['http://b.com']
+    assert_equal ['http://example.com/a'], structure['http://c.com']
 
     # simulating new crawl
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
+
+    assert_equal ['http://example.com/a'], structure['http://a.com']
+    assert_equal ['http://example.com/a'], structure['http://b.com']
+    assert_equal ['http://example.com/a'], structure['http://c.com']
     @site.add_broken('http://example.com/a', 'http://c.com', :problem1)
-    @site.purge_orphaned_blacklist_items
+
+    # Purging
+    Sites.purge_orphaned_blacklist_items
 
     structure = @site.pages_by_blacklisted_link
-    assert_nil structure['http://a.com'].first
-    assert_nil structure['http://b.com'].first
+
+    assert_equal nil, structure['http://a.com']
+    assert_equal nil, structure['http://b.com']
 
     assert_equal ['http://example.com/a'], structure['http://c.com']
+  end
+
+
+  def test_summary_report_string_generated
+    csv = Sites.summary_report
+    assert_kind_of String, csv
+    assert_equal "Community,Pages,Checked,Broken\n", csv.to_a.first
+  end
+
+
+  def test_summary_report_only_reports_on_recent
+    # Add a recently checked item
+    $redis.sadd "#{$options.global_prefix}:sites", 'http://another.com'
+    $redis.hset "#{$options.global_prefix}:http://another.com", 'location', 'http://another.com'
+    $redis.hset "#{$options.global_prefix}:http://another.com", 'last_checked', Time.now.to_i
+    csv = Sites.summary_report()
+    assert_equal 2, csv.to_a.length
+    # Add an non-recently checked item
+    $redis.sadd "#{$options.global_prefix}:sites", 'http://defunct.com'
+    $redis.hset "#{$options.global_prefix}:http://defunct.com", 'location', 'http://defunct.com'
+    $redis.hset "#{$options.global_prefix}:http://defunct.com", 'last_checked', Time.at(0).to_i
+    csv = Sites.summary_report()
+    assert_equal 2, csv.to_a.length
+    assert /another/ =~ csv.to_a[1]
+    refute /defunct/ =~ csv.to_a[1]
   end
 end

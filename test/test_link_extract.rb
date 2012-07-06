@@ -12,6 +12,11 @@ class TestLinkExtract < MiniTest::Unit::TestCase
   end
 
 
+  def teardown
+
+  end
+
+
   def test_returns_array
     a = LinkExtract << @page
     assert_kind_of Array, a
@@ -35,6 +40,18 @@ class TestLinkExtract < MiniTest::Unit::TestCase
   def test_array_contains_no_duplicates
     a = LinkExtract << @page
     refute a.uniq! # returns nil if no duplicates removed
+  end
+
+
+  def test_permanently_ignored_links_ignored
+    a = LinkExtract << @page
+    assert_equal 10, a.length
+    $options.permanently_ignore << /relative/
+    a = LinkExtract << @page
+    assert_equal 8, a.length
+    refute_includes a, "http://example.com/relative_url/1"
+    refute_includes a, "http://example.com/relative_url/2"
+    load './options.rb'
   end
 
 

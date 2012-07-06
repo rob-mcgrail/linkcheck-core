@@ -24,16 +24,33 @@ end
 
 
 helpers do
-  # In development
-  def pdf(page, destination)
-    # echo "<b>Hello</b> World!" | wkhtmltopdf - foo.pdf --user-style-sheet /url/css.css
-    location = params[:location]
-    str = "#{settings.pdf} #{request.host}:#{request.port}#{page} #{settings.public_folder}/pdf#{destination}"
-    system str
-    "/pdf#{destination}"
+  def pdf(location)
+    require 'open3'
+    @context = :pages
+    @site = Sites.get(location)
+    @problems = @site.pages_by_link_by_problem
+
+    tmpfile = Tempfile.new(['pdf-source', '.html'])
+    tmpfile.write(haml :'pdf/pdf', :layout => false)
+
+    command = "#{settings.pdf} -q #{tmpfile.path} - --user-style-sheet #{settings.public_folder}/css/pdf.css"
+
+    pdf, err = Open3.popen3(command) do |stdin, stdout, stderr|
+      stdout.binmode
+      stderr.binmode
+      [stdout.read, stderr.read]
+    end
   end
 end
 
+get '/test/:location/?' do
+  location = params[:location].from_slug
+  title location
+  @context = :pages
+  @site = Sites.get(location)
+  @problems = @site.pages_by_link_by_problem
+  haml :'pdf/pdf'
+end
 
 get '/?' do
   title 'sites'
@@ -103,10 +120,25 @@ post '/purge_orphaned_blacklist_items' do
 end
 
 
+get '/summary_report.csv' do
+  [200, {'Content-Type' => 'text/csv'}, Sites.summary_report]
+end
+
+
 get '/site/:location/pdf' do
-  location = params[:location]
-  @pdf_url = pdf("/site/#{location}", "/#{Time.now.to_i}.pdf")
-  redirect @pdf_url
+  location = params[:location].from_slug
+  @pdf = pdf(location)
+  [200, {'Content-Type' => 'application/pdf'}, @pdf]
+end
+
+
+get '/check-status' do
+  status = $redis.get("#{$options.global_prefix}:status")
+  if status
+    'Checking ' + status[0..70] + '...'
+  else
+    'Not running'
+  end
 end
 
 
@@ -158,9 +190,23 @@ post '/blacklist/premanent/remove/?' do
 end
 
 
-post '/blacklist/temp/remove?' do
+post '/blacklist/temp/remove/?' do
   location = params[:site]
   link = params[:link]
   Sites.get(location).remove_from_temp_blacklist link
   redirect "/site/#{location.to_slug}/blacklist/temp"
+end
+
+
+post '/sites/reported/?' do
+  location = params[:site]
+  change = params[:change]
+  if change == 'add'
+    Sites.get(location).is_reported
+  elsif change == 'remove'
+    Sites.get(location).not_reported
+  else
+    flash[:error] = "There was an error changing site status."
+  end
+  redirect "/site/#{location.to_slug}"
 end

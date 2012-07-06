@@ -1,7 +1,6 @@
 STATIC_EXTENSIONS = %w(flv swf png jpg gif asx zip rar tar 7z gz jar js css dtd xsd ico raw mp3 mp4 wav wmv ape aac ac3 wma aiff mpg mpeg avi mov ogg mkv mka asx asf mp2 m1v m3u f4v pdf doc docx xls ppt pps bin exe rss xml)
 
 class Crawler
-
   def initialize(site)
     @site = site
   end
@@ -23,19 +22,23 @@ class Crawler
     catch(:looping) do
       Anemone.crawl(@site.location, opts) do |anemone|
         @site.log_crawl
-        anemone.skip_links_like /%23/, /\.#{STATIC_EXTENSIONS.join('|')}$/
+        ignore_patterns = /\.#{STATIC_EXTENSIONS.join('|')}$/, *$options.avoid
+        anemone.skip_links_like ignore_patterns
         anemone.on_every_page do |page|
           if LoopTrap.triggered?
             throw :looping
           end
+
+          Status.set page.url
           puts "On page -> #{page.url}"
+
           check_links(page) if page.doc
+
           @site.log_page page.url
           LoopTrap.incr
         end
       end
     end
-
     post_cleanup
   end
 
@@ -59,14 +62,12 @@ class Crawler
     @site.reset_counters
     @site.flush_temp_blacklist
     @site.flush_issues
-    LinkCache.flush_if_stale
+    @site.not_reported
     LoopTrap.reset
   end
 
 
   def post_cleanup
-    # Until we know that this can reliably run its course
-    # keep all important jobs in pre_cleanup, in case post_\
-    # never gets a chance to run...
+    Status.clear
   end
 end

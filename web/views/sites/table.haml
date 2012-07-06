@@ -4,40 +4,42 @@
             %th
                 Site
             %th
+                Done
+            %th
                 Last checked
             %th
+                Problems
+            %th
+                Pages
+            %th
                 Links
-            %th
-                Pages checked
-            %th
-                Links checked
     %tbody
         - sites.each do |site|
             %tr.siteInfo
-                %td.span7
+                %td.span6
                     %a{:href => "/site/#{site.location.to_slug}"}
-                        %h3
+                        %strong.subtleLink.siteTitle
                             != site.location
+                %td.span2
+                    - if site.reported?
+                        %span.badge.badge-success
+                            %i.icon-ok.icon-white
 
-                %td.span4
+                %td.span3
                     - if site.last_checked
                         %span.muted.smaller
                             != site.last_checked.to_time
 
                 %td.span2
-                    - if site.pages_checked_count.is_a? Fixnum
-                        - if site.broken_links_count > 0
-                            %span.badge.badge-error
-                                != site.broken_links_count
-
+                    - if site.broken_links_count < 1 || nil
+                        %span.badge.badge-success
+                            0
+                    - else
+                        %span.badge.badge-error
+                            != site.broken_links_count
                 %td.span2
-                    - if site.pages_checked_count.is_a? Fixnum
-                        - if site.pages_checked_count > 0
-                            %span.badge.badge-success
-                                != site.pages_checked_count
-
+                    %span.badge.badge-info
+                        != site.pages_checked_count || '0'
                 %td.span2
-                    - if site.pages_checked_count.is_a? Fixnum
-                        - if site.links_checked_count > 0
-                            %span.badge.badge-success
-                                != site.links_checked_count
+                    %span.badge.badge-info
+                        != site.links_checked_count || '0'

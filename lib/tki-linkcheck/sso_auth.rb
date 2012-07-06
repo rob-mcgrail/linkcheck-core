@@ -3,7 +3,7 @@ class SSOAuth
     h = {}
     agent = Mechanize.new
     agent.get(url) do |page|
-      if page.forms.first
+      if page.forms.first && page.forms.first.fields[0].name == "SAMLResponse"
         agent.submit(page.forms.first)
         agent.cookies.each do |c|
           h[c.name] = c.value
