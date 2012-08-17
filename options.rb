@@ -10,7 +10,7 @@ $options.expiry = 691_200
 $options.crawl_delay = 0.5
 $options.check_delay = 0.5
 $options.retry_count = 2
-$options.crawl_limit = 2000
+$options.crawl_limit = 3000
 
 $options.avoid = []
 $options.avoid << /\/(e|m|r)\// #legacy
