@@ -57,7 +57,7 @@ class Check
     if @link.gsub(' ', '%20') =~ URI::regexp($options.valid_schemes)
       begin
         link = @link.gsub(' ', '%20')
-        uri = URI.parse(link)
+        uri = URI.parse(URI.encode(link))
       rescue URI::InvalidURIError
         return :invalid
       end
