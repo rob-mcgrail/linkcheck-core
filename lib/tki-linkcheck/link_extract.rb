@@ -3,6 +3,12 @@ class LinkExtract
 
     def <<(page)
       require 'uri'
+
+      unless page.doc.css('a[target=_blank]').empty?
+        puts page.url.to_s + ' !!!!!!!!!!!!!!!!!!!!!'
+        $redis.sadd 'blanks', page.url
+      end
+
       a = page.doc.css('a')
       a = a.map {|link| link.attribute('href').to_s}
 
@@ -13,7 +19,6 @@ class LinkExtract
 
       a.uniq # ignore duplicates again now all links are absolute
     end
-
 
     private
 
