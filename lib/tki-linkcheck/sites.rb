@@ -305,7 +305,7 @@ class Sites
     if v
       v.to_i
     else
-      nil
+      0
     end
   end
 
