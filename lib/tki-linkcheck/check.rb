@@ -54,10 +54,11 @@ class Check
 
 
   def validate_link
-    if @link.gsub(' ', '%20') =~ URI::regexp($options.valid_schemes)
+    if URI.encode(@link) =~ URI::regexp($options.valid_schemes)
       begin
-        link = @link.gsub(' ', '%20')
-        uri = URI.parse(URI.encode(link))
+        link = URI.encode(@link)
+        link.gsub!('%23', '#') # Keep these unencoded for various reasons.
+        uri = URI.parse(link)
       rescue URI::InvalidURIError
         return :invalid
       end

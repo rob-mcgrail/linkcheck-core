@@ -91,7 +91,6 @@ class TestCheck < MiniTest::Unit::TestCase
 
   def test_invalid_uris_return_correct_symbol
     assert_equal :ignored_for_uri_class, Check.new(@page, 'ftp://example.com/page7').validate
-    assert_equal :invalid, Check.new(@page, 'ftp://example.com/macron/ē').validate
     assert_equal :invalid, Check.new(@page, 'some/thing').validate
     assert_equal :invalid, Check.new(@page, 'http:// example.com').validate
   end
