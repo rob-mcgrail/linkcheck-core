@@ -16,6 +16,7 @@ $options.avoid = []
 $options.avoid << /\/(e|m|r)\// #legacy
 $options.avoid << /\/index\.php\//
 $options.avoid << /%23/
+$options.avoid << /sympa\/archive\// # mailinglist archives
 
 $options.permanently_ignore = [ ]
 $options.permanently_ignore << /Search=true&filter\[\]=/ #search
