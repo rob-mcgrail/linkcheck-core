@@ -32,21 +32,26 @@ class LinkExtract
 
     def absolute_and_clean(a, page)
       a.map! do |link|
-        if link !~ /^[a-z]+:\/\// # doesn't start with a protocol
-          if link =~ /^\// # but does start with a slash ("/thing/1")
+
+        if link =~ /^\// # Starts with a slash
+            # Make absolute
             location = "http://#{page.url.host}/"
             link = location + link.gsub(/^\//,'')
-          else
-            # append page path to relative ("thing/1") url
+
+        elsif link !~ /^[a-z]+:\/\// # has no protocol
+
+          if page.url.to_s =~ /\/$/ # page has a trailing slash
+            # append
             location = page.url.to_s
-            unless /(\/$)/.match(location)
-              location = location + '/'
-            end
-            link = location + link.gsub(/^\//,'') # make absolute
+            link = location + link
+          else
+            # Make absolute
+            location = "http://#{page.url.host}/"
+            link = location + link.gsub(/^\//,'')
           end
-        else
-          link
+
         end
+
         link = link.gsub('%23', '#')
       end
     end
