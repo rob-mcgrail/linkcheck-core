@@ -46,8 +46,19 @@ class LinkExtract
             link = location + link
           else
             # Make absolute
-            location = "http://#{page.url.host}/"
-            link = location + link.gsub(/^\//,'')
+            path = page.url.path.to_s
+            extra = path.match /([^\/]+$)/
+
+            if extra
+              # Discard extra
+              path.gsub!(/#{extra[1]}$/, '')
+            end
+
+            # Remove any slashes if needed
+            path = path[1..-1] if path && path =~ /^\//
+
+            # Assemble absolute link
+            link = "http://#{page.url.host}/#{path}" + link
           end
 
         end

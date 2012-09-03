@@ -80,5 +80,20 @@ class TestLinkExtract < MiniTest::Unit::TestCase
 
     a = LinkExtract << page
     assert_includes a, "http://example.com/site_section/relative_url"
+
+    page.url = URI('http://example.com/site_section/index.php')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/site_section/relative_url"
+
+    page.url = URI('http://example.com/site_section/index')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/site_section/relative_url"
+
+    page.url = URI('http://example.com')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/relative_url"
   end
 end
