@@ -1,7 +1,7 @@
 class Status
   def self.set(status)
     $redis.set "#{$options.global_prefix}:status", "#{status}"
-    $redis.expire "#{$options.global_prefix}:status", 120
+    $redis.expire "#{$options.global_prefix}:status", 240
   end
 
 
