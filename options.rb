@@ -4,8 +4,6 @@ $options = OpenStruct.new
 
 $options.datastore = 1
 $options.global_prefix = 'tki-linkcheck' # changing this will orphan hundreds of redis keys.
-$options.valid_schemes = ['http', 'ftp', 'https']
-$options.checked_classes = [URI::HTTP, URI::HTTPS]
 $options.expiry = 691_200
 $options.crawl_delay = 0.5
 $options.check_delay = 0.5

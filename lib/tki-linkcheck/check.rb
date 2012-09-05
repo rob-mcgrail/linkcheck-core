@@ -1,4 +1,4 @@
-REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError]
+REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, SocketError, Errno::ETIMEDOUT, EOFError, HTTParty::UnsupportedURIScheme]
 
 class Check
   require 'uri'
@@ -54,41 +54,33 @@ class Check
 
 
   def validate_link
-    if URI.encode(@link) =~ URI::regexp($options.valid_schemes)
-      begin
-        link = URI.encode(@link)
-        link.gsub!('%23', '#') # Keep these unencoded for various reasons.
-        uri = URI.parse(link)
-      rescue URI::InvalidURIError
-        return :invalid
-      end
-      if $options.checked_classes.member? uri.class
-        response(uri)
-      else
-        :ignored_for_uri_class
-      end
-    else
-      :invalid
+    begin
+      uri = Addressable::URI.encode(@link)
+      uri.gsub!('%23', '#') # Keep these unencoded for various reasons.
+      uri = Addressable::URI.parse(uri)
+    rescue URI::InvalidURIError
+      return :invalid
     end
+    return response(uri)
   end
 
 
   def response(uri)
     response_code = get_response_code(uri)
     case response_code
-    when '200'
+    when 200
       nil
-    when '404'
+    when 404
       :not_found
-    when '403'
+    when 403
       :forbidden
-    when '301'
+    when 301
       ignore_local :moved_permanently
-    when '302'
+    when 302
       ignore_local nil
-    when '303'
+    when 303
       ignore_local nil
-    when '503'
+    when 503
       :unavailable
     else
       :unknown
@@ -107,17 +99,8 @@ class Check
 
 
   def get_response_code(uri)
-    if uri.class == URI::HTTPS
-      https_request(uri)
-    else
-      http_request(uri)
-    end
-  end
-
-
-  def http_request(uri)
     begin
-      response = Net::HTTP.get_response(uri)
+      response = HTTParty.get(uri, :follow_redirects => false)
       code = response.code
     rescue *REQUEST_EXCEPTIONS
       retry_count = (retry_count || 0) + 1
@@ -128,21 +111,4 @@ class Check
     code
   end
 
-
-  def https_request(uri)
-    begin
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      request = Net::HTTP::Get.new(uri.request_uri)
-      response = http.request(request)
-      code = response.code
-    rescue *REQUEST_EXCEPTIONS
-      retry_count = (retry_count || 0) + 1
-      sleep ($options.check_delay * retry_count * 2)
-      retry unless retry_count >= $options.retry_count
-      code = 'failed'
-    end
-    code
-  end
 end

@@ -7,6 +7,8 @@ gem "SystemTimer", :platforms => :mri_18
 gem "trollop"
 gem "mechanize"
 gem "fastercsv"
+gem "httparty"
+gem "addressable", :require => "addressable/uri"
 
 group :test do
   gem "minitest", :platforms => :mri_18
