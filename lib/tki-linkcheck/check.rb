@@ -5,6 +5,7 @@ class Check
   require 'net/http'
   require 'net/https'
 
+
   def initialize(page_, link_)
     @page = page_
     @link = link_
