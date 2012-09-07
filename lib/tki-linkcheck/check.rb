@@ -1,4 +1,4 @@
-REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED, SocketError, Errno::ETIMEDOUT, EOFError, HTTParty::UnsupportedURIScheme]
+REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED, SocketError, Errno::ETIMEDOUT, EOFError, URI::InvalidURIError, HTTParty::UnsupportedURIScheme]
 
 class Check
   require 'uri'
