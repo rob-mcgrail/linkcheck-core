@@ -51,14 +51,14 @@ class LinkExtract
 
             if extra
               # Discard extra
-              path.gsub!(/#{extra[1]}$/, '')
+              shortened = path.gsub(/#{extra[1]}$/, '')
             end
 
             # Remove any slashes if needed
-            path = path[1..-1] if path && path =~ /^\//
+            shortened = shortened[1..-1] if shortened && shortened =~ /^\//
 
             # Assemble absolute link
-            link = "http://#{page.url.host}/#{path}" + link
+            link = "http://#{page.url.host}/#{shortened}" + link
           end
 
         end
