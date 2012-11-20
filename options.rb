@@ -24,4 +24,4 @@ $options.permanently_ignore << /javascript:/ #href javascript
 $options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibility|privacy|feedback)(\/|$)/ #footer
 $options.permanently_ignore << /wws\/arc\// # mailinglist archives
 $options.permanently_ignore << /sympa\/archive\// # mailinglist archives
-$options.permanently_ignore << /\/Rate-resource\/" title="Click here to give this resource a rating">Rate this resource</a>/ # weird nzc url
+$options.permanently_ignore << /\/Rate-resource\// # weird nzc url
