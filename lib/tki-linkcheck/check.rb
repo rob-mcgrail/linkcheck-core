@@ -77,7 +77,7 @@ class Check
     when 403
       :forbidden
     when 301
-      ignore_local :moved_permanently
+      ignore_local nil
     when 302
       ignore_local nil
     when 303
