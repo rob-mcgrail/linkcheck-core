@@ -1,4 +1,4 @@
-REQUEST_EXCEPTIONS = [Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED, SocketError, Errno::ETIMEDOUT, EOFError, URI::InvalidURIError, HTTParty::UnsupportedURIScheme]
+REQUEST_EXCEPTIONS = [NoMethodError, Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED, SocketError, Errno::ETIMEDOUT, EOFError, URI::InvalidURIError, HTTParty::UnsupportedURIScheme]
 
 
 class Check
@@ -68,6 +68,7 @@ class Check
 
 
   def response(uri)
+    puts uri
     response_code = get_response_code(uri)
     case response_code
     when 200
