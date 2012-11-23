@@ -15,6 +15,8 @@ $options.avoid << /\/(e|m|r)\// #legacy
 $options.avoid << /\/index\.php\//
 $options.avoid << /%23/
 $options.avoid << /sympa\/archive\// # mailinglist archives
+$options.avoid << /\/Rate-resource\//
+$options.avoid << /\/\(redirect\)\// # mailinglist archives
 
 $options.permanently_ignore = [ ]
 $options.permanently_ignore << /Search=true&filter\[\]=/ #search
@@ -25,3 +27,5 @@ $options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibi
 $options.permanently_ignore << /wws\/arc\// # mailinglist archives
 $options.permanently_ignore << /sympa\/archive\// # mailinglist archives
 $options.permanently_ignore << /\/Rate-resource\// # weird nzc url
+$options.permanently_ignore << /arb\.nzcer/ # weird nzc url
+$options.permanently_ignore << /\/\(redirect\)\// # weird nzc url
