@@ -55,7 +55,7 @@ class TestCheck < MiniTest::Unit::TestCase
     assert_equal :forbidden, Check.new(@page, 'http://example.com/page3').validate
 
     stub_request(:get, "anothersite.com/page4").to_return(:status => 301)
-    assert_equal :moved_permanently, Check.new(@page, 'http://anothersite.com/page4').validate
+    assert_nil Check.new(@page, 'http://anothersite.com/page4').validate
 
     stub_request(:get, "anothersite.com/page5").to_return(:status => 302)
     assert_nil Check.new(@page, 'http://anothersite.com/page5').validate
@@ -90,10 +90,7 @@ class TestCheck < MiniTest::Unit::TestCase
 
 
   def test_invalid_uris_return_correct_symbol
-    assert_equal :ignored_for_uri_class, Check.new(@page, 'ftp://example.com/page7').validate
-    assert_equal :invalid, Check.new(@page, 'ftp://example.com/macron/ē').validate
-    assert_equal :invalid, Check.new(@page, 'some/thing').validate
-    assert_equal :invalid, Check.new(@page, 'http:// example.com').validate
+    assert_equal :unknown, Check.new(@page, 'ftp://example.com/page7').validate
   end
 
 

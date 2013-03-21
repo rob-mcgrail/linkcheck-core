@@ -72,7 +72,28 @@ class TestLinkExtract < MiniTest::Unit::TestCase
     page = OpenStruct.new
     page.url = URI('http://example.com/site_section')
     page.doc = Nokogiri::HTML('<html><body><a href="relative_url"></a></body></html>')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/relative_url"
+
+    page.url = URI('http://example.com/site_section/')
+
     a = LinkExtract << page
     assert_includes a, "http://example.com/site_section/relative_url"
+
+    page.url = URI('http://example.com/site_section/index.php')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/site_section/relative_url"
+
+    page.url = URI('http://example.com/site_section/index')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/site_section/relative_url"
+
+    page.url = URI('http://example.com')
+
+    a = LinkExtract << page
+    assert_includes a, "http://example.com/relative_url"
   end
 end
