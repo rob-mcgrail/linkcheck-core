@@ -1,3 +1,7 @@
 != haml :'info/header'
 != haml :'info/tabs'
 != haml :'info/table'
+
+%hr
+.json_link
+  %a{:href => request.fullpath + '.json'} Get this data as JSON

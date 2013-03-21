@@ -15,6 +15,7 @@ GEM
     fastthread (1.0.7)
     gem_plugin (0.2.3)
     haml (3.1.4)
+    json (1.7.6)
     mechanize (2.3)
       domain_name (~> 0.5, >= 0.5.1)
       mime-types (~> 1.17, >= 1.17.2)
@@ -71,6 +72,7 @@ DEPENDENCIES
   anemone
   fastercsv
   haml
+  json
   mechanize
   minitest
   minitest-colorize

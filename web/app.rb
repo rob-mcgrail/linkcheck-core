@@ -60,6 +60,18 @@ get '/?' do
   haml :sites
 end
 
+# Route for API
+get '/site/:location.json?' do
+  location = params[:location].from_slug
+  title location
+  @context = :pages
+  @site = Sites.get(location)
+  @problems = @site.pages_by_link_by_problem
+
+  content_type :json
+  @problems.to_json
+end
+
 
 get '/site/:location/?' do
   location = params[:location].from_slug
