@@ -8,6 +8,7 @@ GEM
       robotex (>= 1.0.0)
     cgi_multipart_eof_fix (2.5.0)
     crack (0.3.1)
+    curb (0.8.5)
     daemons (1.1.8)
     domain_name (0.5.3)
       unf (~> 0.0.3)
@@ -76,6 +77,7 @@ DEPENDENCIES
   SystemTimer
   addressable
   anemone
+  curb
   fastercsv
   haml
   httparty
