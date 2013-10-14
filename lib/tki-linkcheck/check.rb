@@ -1,4 +1,4 @@
-REQUEST_EXCEPTIONS = [NoMethodError, Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED, SocketError, Errno::ETIMEDOUT, EOFError, URI::InvalidURIError, HTTParty::UnsupportedURIScheme]
+REQUEST_EXCEPTIONS = [NoMethodError, Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED, SocketError, Errno::ETIMEDOUT, EOFError, URI::InvalidURIError, HTTParty::UnsupportedURIScheme, Curl::Err::HostResolutionError]
 
 
 class Check
