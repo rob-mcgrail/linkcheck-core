@@ -9,6 +9,7 @@ gem "mechanize"
 gem "fastercsv"
 gem "json"
 gem "httparty"
+gem "curb"
 gem "addressable", :require => "addressable/uri"
 
 group :test do
