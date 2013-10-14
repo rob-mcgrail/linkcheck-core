@@ -25,8 +25,6 @@ class Check
         response = validate_link
         LinkCache.add @link, response
         sleep $options.check_delay
-        puts "Sleep - #{$options.check_delay}"
-        puts "Validating link #{response}"
         response
       end
     end
@@ -56,24 +54,19 @@ class Check
 
 
   def validate_link
-    begin
-      uri = Addressable::URI.encode(@link)
-      uri.gsub!('%23', '#') # Keep these unencoded for various reasons.
-      uri = Addressable::URI.parse(uri)
-    rescue URI::InvalidURIError
-      return :invalid
-    end
+    uri = Addressable::URI.normalized_encode(Addressable::URI.unencode(@link))
     return response(uri)
   end
 
 
   def response(uri)
-    puts uri
     response_code = get_response_code(uri)
     case response_code
     when 200
       nil
     when 404
+      puts uri
+      puts response_code
       :not_found
     when 403
       :forbidden
@@ -86,6 +79,8 @@ class Check
     when 503
       :unavailable
     else
+      puts uri
+      puts response_code
       :unknown
     end
   end
@@ -103,8 +98,9 @@ class Check
 
   def get_response_code(uri)
     begin
-      response = HTTParty.get(uri, :follow_redirects => false)
-      code = response.code
+      c = Curl::Easy.new(uri)
+      c.perform
+      code = c.response_code
     rescue *REQUEST_EXCEPTIONS
       retry_count = (retry_count || 0) + 1
       sleep ($options.check_delay * retry_count * 2)
@@ -113,5 +109,4 @@ class Check
     end
     code
   end
-
 end

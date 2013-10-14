@@ -63,7 +63,8 @@ class LinkExtract
 
         end
 
-        link = link.gsub('%23', '#')
+        # link = link.gsub('%23', '#')
+        link
       end
     end
   end
