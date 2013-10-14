@@ -19,7 +19,6 @@ class Check
     else
       cache_response = LinkCache.get @link # "" for fine, sym for problem, nil for uncached
       if cache_response
-        puts "Hitting cache #{cache_response}"
         parse_cache cache_response
       else
         response = validate_link
@@ -54,7 +53,12 @@ class Check
 
 
   def validate_link
-    uri = Addressable::URI.normalized_encode(Addressable::URI.unencode(@link))
+    anchorless_uri = @link.gsub(/#[^!].+/, '')
+
+    uri = Addressable::URI.normalized_encode(
+      Addressable::URI.unencode(anchorless_uri)
+    )
+
     return response(uri)
   end
 

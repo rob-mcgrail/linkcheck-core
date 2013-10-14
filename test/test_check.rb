@@ -33,7 +33,7 @@ class TestCheck < MiniTest::Unit::TestCase
 
 
   def test_slashes_dont_matter_much
-    stub_request(:get, "example.com/somepage/issue/1234").to_return(:status => 200, :body=>@page)
+    stub_request(:get, "http://example.com/somepage/issue/1234").to_return(:status => 200, :body=>@page)
     assert_nil Check.new(@page, 'http://example.com/somepage/issue/1234#divId').validate
   end
 
@@ -86,11 +86,6 @@ class TestCheck < MiniTest::Unit::TestCase
 
     stub_request(:get, "example.com/other/page2").to_return(:status => 200)
     assert_nil Check.new(@page, 'http://example.com/other/page2').validate
-  end
-
-
-  def test_invalid_uris_return_correct_symbol
-    assert_equal :unknown, Check.new(@page, 'ftp://example.com/page7').validate
   end
 
 
