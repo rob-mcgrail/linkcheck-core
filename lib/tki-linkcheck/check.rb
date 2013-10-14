@@ -62,7 +62,7 @@ class Check
   def response(uri)
     response_code = get_response_code(uri)
     case response_code
-    when 200
+    when 200..299
       nil
     when 404
       puts uri
