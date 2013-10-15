@@ -2,7 +2,7 @@ h2. General
 
 A linkchecker with web interface, developed to assist in the Channel Support maintanence of TKI.
 
-The linkchecker had a user interface was at: "http://linkcheck-live":http://linkcheck-live
+The linkchecker had a user interface at: "http://linkcheck-live":http://linkcheck-live
 
 Some external tools made use of this web-interface for ingesting data. For example, CMIS. For more information see the CMIS documentation.
 
@@ -65,9 +65,9 @@ h2. Technical
 
 h3. Components
 
-The linkchecker is installed on the server linkcheck-live.
+The linkchecker was previously installed on its own Debian virtual server.
 
-It is made up of 3 components which could, in principal, be run on completely separate boxes:
+It is made up of 3 components which could, in principal, be run on seperately:
 
 h3. Redis datastore
 
