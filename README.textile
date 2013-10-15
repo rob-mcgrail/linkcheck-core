@@ -1,0 +1,249 @@
+h2. General
+
+We perform regular linkchecking of TKI and other communities as part of our TKI Channel Support and SLA obligations.
+
+Currently we report on broken links for TKI fortnightly.
+
+Linkchecking is currently performed with a custom ruby script on the server linkcheck-live.
+
+The linkchecker has a user interface was at: "http://linkcheck-live":http://linkcheck-live
+
+h2. Usage
+
+The linkchecker user interface was available at: "http://linkcheck-live":http://linkcheck-live
+
+h3. List of sites
+
+The landing page shows a list of sites checked recently. If there are sites that haven't been checked recently, these will appear on a second tab.
+
+The list of sites show their current problem link count, the amount of pages visited in the last crawl, and the number of links checked overall (includes repeat checks).
+
+h3. Site view
+
+To inspect broken links for a site, click it's url from the homepage.
+
+You will be shown a list of problem links (highlighted red) with a list of pages the link appears on.
+
+These links are sorted by the type of problem - "not found", "permanently moved" etc. For more information on these labels see "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html":http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+
+If a link seems to have been recorded as broken by mistake, it can be "Permanently ignored" with the buttons to its right. Permanently ignoring a link will move it to the last tab on the site view, and remove it from the broken count. It will stay ignored permanently, but can be added back to the main list of broken links at any time by selecting the third tab, and clicking the "Whitelist" button.
+
+If you want to remove a link from the main list, but have it appear again after the next check (for example, to mark it 'done', or to hide it from someone) select 'Ignore'. It will be moved to the second tab, and will reappear after the next check of the site.
+
+h3. PDF export
+
+The main report for a site can be exported as a PDF. This functionality is 'beta' - the PDF formatting is ugly, and lines break poorly. It is not recommended for clients at this stage, but may be useful for quick distribution of lists.
+
+h3. Site management
+
+Sites can be managed at "http://linkcheck-live/sites/manage":http://linkcheck-live/sites/manage (See top right of every page).
+
+All sites under the 'Active' list will be checked periodically.
+
+Clicking the yellow 'deactivate' button next to a site will move it to the Disabled list.
+
+While disabled, a site will not appear on the main site list, and will not be checked.
+
+Note: There is currently no option to delete sites from the web interface. Use the Disable option instead.
+
+h3. Adding new sites
+
+New sites can be added from the site management panel by clicking the 'Add +' button at the top of the list of active sites.
+
+Enter the site's full url - http://sitename.com
+
+Avoid trailing slashes, and ensure you have the site's correct canonical domain - if visiting http://site.com redirects you to http://www.site.com, use the later.
+
+h3. Admin functions
+
+The admin panel is available at http://linkcheck-live/admin (See top right of every page).
+
+The admin panel has two functions currently:
+
+# Export a CSV summary of the current list of recently checked sites. This data is intended for monthly reporting under the TKI Channel Support contract.
+# Delete orphaned blacklist items. Broken links that are permanently ignored will stay in a set of links called the 'blacklist', even if the link is no longer identified by the checker as broken. This could eventually lead to a lot of cruft in the blacklist. These items can be removed with this button. Warning - deleting orphaned items while sites are being checked may cause you to lose everything in that site's blacklist. Only use this option when the checker is not running.
+
+h2. Technical
+
+h3. Components
+
+The linkchecker is installed on the server linkcheck-live.
+
+It is made up of 3 components which could, in principal, be run on completely separate boxes:
+
+h3. Redis datastore
+
+Usually configured to use db 1, with a key namespace of tki-linkcheck:.
+
+For information on installing and managing redis for your environment see "http://redis.io/documentation":http://redis.io/documentation
+
+h3. linkcheck-core checker
+
+Basic installation, assuming redis is installed already:
+
+@cd linkcheck-core@
+@gem install bundler@
+@bundle install@
+@rake test@
+
+And then run your scripts ala: @bundle exec ruby bin/all@
+
+To check all your active sites via a cron job you might create a script like:
+
+<pre>
+#!/bin/bash
+
+cd /var/www/linkcheck-core
+
+bundle exec ruby bin/all
+</pre>
+
+The various scripts are:
+
+@linkcheck-core/bin/all@
+
+Checks every active site, one after another. (Note, script spawns new ruby intercodeters for each individual site check).
+
+@linkcheck-core/bin/run-unchecked@
+
+Same as above, but excludes sites checked recently (good for resuming a crawl that was stopped).
+
+@linkcheck-core/bin/cc@
+
+Clears the cache (all check results are caches in redis, with a ~week long expiry).
+
+@linkcheck-core/bin/run http://site.com@
+
+Checks an individual site, taking it's full @http://site.com@ location as an argument. This must be a site already in the system.
+
+@linkcheck-core/bin/arbitrary http://site.com@
+
+Adds and then checks a site. Used for checking sites that the system has never encountered.
+
+h3. linkcheck web interface
+
+The linkchecker web interface is a Sinatra app ("http://www.sinatrarb.com/intro.html":http://www.sinatrarb.com/intro.html), using the Kickoff template ("https://github.com/robomc/kickoff":https://github.com/robomc/kickoff).
+
+Recommended means of deployment is via Apache Passenger ("http://www.modrails.com/documentation/Users%20guide%20Apache.html":http://www.modrails.com/documentation/Users%20guide%20Apache.html).
+
+Example rack config (i.e. @/var/www/linkcheck-core/config.ru@):
+
+<pre>
+require 'rubygems'
+require 'bundler'
+
+Bundler.require(:web, :default)
+
+require './lib/tki-linkcheck'
+require './web/app'
+
+# Rack configuration
+
+# Serve static files in dev
+
+if settings.development?
+  use Rack::Static, :urls => ['/css', '/img', '/js', '/less', '/pdf', '/robots.txt', '/favicons.ico'], :root => "web/public"
+end
+
+run Sinatra::Application
+</pre>
+
+Example apache config:
+
+<pre>
+<VirtualHost *:80>
+        ServerName linkcheck-live.internal.cwa.co.nz
+        ServerAlias linkcheck  linkcheck-live
+        DocumentRoot /var/www/htdocs/app
+        PassengerAppRoot /var/www/linkcheck-core
+        <Directory /var/www/htdocs>
+                Order Deny,Allow
+                Satisfy Any
+
+                # Default behaviour
+                # Restricted
+                Deny from all
+
+                # LML connections
+                Allow from dmzrouter-int.cwa.co.nz      # Office internet facing NAT router (Actrix)
+                Allow from 203.167.252.122              # Office internet facing NAT router (Telstra)
+                Allow from 192.168.0.0/16               # (0.0-255.255) Office private net
+                Allow from 203.96.63.224/27             # (224-255) Lambton House Digistore net
+                Allow from 203.96.53.0/25               # (0-127) Willeston House net
+                Allow from 203.96.53.128/26             # (128-191) Lambton House net
+
+                # Username / Password
+                AuthType Basic
+                AuthName "Learning Media Ltd"
+                AuthUserFile /etc/apache2/linkcheck.users
+                Require valid-user
+
+        </Directory>
+
+        ErrorLog /var/log/apache2/error.log
+                LogLevel warn
+                CustomLog /var/log/apache2/access.log combined
+                ServerSignature On
+</VirtualHost>
+</pre>
+
+h3. Linkchecker code
+
+The linkchecker source is available at:
+
+"https://github.com/cwa-lml/linkcheck-core":https://github.com/cwa-lml/linkcheck-core
+
+It was created against ruby 1.8.7-head, but should be compatible with 1.9.
+
+The crawler component uses the library "http://anemone.rubyforge.org/":http://anemone.rubyforge.org/
+
+The file @./lib/tki-linkcheck/crawler.rb@ has a number of anemone options hardcoded, which may be relevant to modifications.
+
+Unit tests are at @./test/@, and are important to maintain, due to the eyewatering parts of this code (like the various regexes...). Run these with rake:
+
+@$ rake test@
+
+The development server can be started with:
+
+@$ rake server@
+
+h2. Configuration
+
+The linkchecker has the following options in @./options.rb@:
+
+@$options.datastore = 1@
+The datastore id for redis.
+
+@$options.global_codefix = 'tki-linkcheck' # changing this will orphan hundreds of redis keys.@
+The prefix for all keys in the datastore. Do not change this value without good reason.
+
+@$options.valid_schemes = ['http', 'ftp', 'https']@
+URL schemes the checker will acknowledge.
+
+@$options.checked_classes = [URI::HTTP, URI::HTTPS]@
+A whitelist for ruby URI classes to check - http://www.ruby-doc.org/stdlib-1.9.3/libdoc/uri/rdoc/
+
+@$options.expiry = 691_200@
+The expiry time in seconds for cache keys.
+
+@$options.crawl_delay = 0.5@
+@$options.check_delay = 0.5@
+Delay for the crawler, and the checking of links within a crawled page, respectively.
+
+These delays are ignored if hitting the cache.
+
+@$options.retry_count = 2@
+The amount of times to retry a link after a failure. (Retrying slows the entire script exponentially with each retry, so keep this low).
+
+@$options.crawl_limit = 2000@
+A hard limit on pages to crawl for a site - a sanity check on possible loops etc.
+
+@$options.avoid = []@
+@$options.avoid << /\/(e|m|r)\// #legacy@
+@$options.avoid << /\/index\.php\//@
+An array of regular excodessions. Matching urls will not be crawled by the crawler.
+
+@$options.permanently_ignore = [ ]@
+@$options.permanently_ignore << /javascript:/ #href javascript@
+@$options.permanently_ignore << /www\.tki\.org\.nz\/(about|contact|help|accessibility|privacy)(\/|$)/ #footer@
+An array of regular excodessions. Matching urls will not be checked by the linkchecker.
