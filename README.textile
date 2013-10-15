@@ -6,7 +6,9 @@ Currently we report on broken links for TKI fortnightly.
 
 Linkchecking is currently performed with a custom ruby script on the server linkcheck-live.
 
-The linkchecker has a user interface was at: "http://linkcheck-live":http://linkcheck-live
+The linkchecker had a user interface was at: "http://linkcheck-live":http://linkcheck-live
+
+Some external tools made use of this web-interface for ingesting data. For example, CMIS. For more information see the CMIS documentation.
 
 h2. Usage
 
