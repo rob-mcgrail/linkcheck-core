@@ -1,10 +1,6 @@
 h2. General
 
-We perform regular linkchecking of TKI and other communities as part of our TKI Channel Support and SLA obligations.
-
-Currently we report on broken links for TKI fortnightly.
-
-Linkchecking is currently performed with a custom ruby script on the server linkcheck-live.
+A linkchecker with web interface, developed to assist in the Channel Support maintanence of TKI.
 
 The linkchecker had a user interface was at: "http://linkcheck-live":http://linkcheck-live
 
