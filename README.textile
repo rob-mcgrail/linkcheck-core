@@ -1,10 +1,10 @@
 h2. General
 
-A linkchecker with web interface, developed to assist in the Channel Support maintanence of TKI.
+A linkchecker with web interface.
 
 The linkchecker had a user interface at: "http://linkcheck-live":http://linkcheck-live
 
-Some external tools made use of this web-interface for ingesting data. For example, CMIS. For more information see the CMIS documentation.
+Some external tools made use of this web-interface for ingesting data.
 
 h2. Usage
 
@@ -55,11 +55,6 @@ Avoid trailing slashes, and ensure you have the site's correct canonical domain 
 h3. Admin functions
 
 The admin panel is available at http://linkcheck-live/admin (See top right of every page).
-
-The admin panel has two functions currently:
-
-# Export a CSV summary of the current list of recently checked sites. This data is intended for monthly reporting under the TKI Channel Support contract.
-# Delete orphaned blacklist items. Broken links that are permanently ignored will stay in a set of links called the 'blacklist', even if the link is no longer identified by the checker as broken. This could eventually lead to a lot of cruft in the blacklist. These items can be removed with this button. Warning - deleting orphaned items while sites are being checked may cause you to lose everything in that site's blacklist. Only use this option when the checker is not running.
 
 h2. Technical
 
